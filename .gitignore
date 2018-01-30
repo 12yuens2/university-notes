@@ -2,3 +2,5 @@
 *.bbl
 *.blg
 *.log
+*.dvi
+*.toc
