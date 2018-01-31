@@ -1,0 +1,44 @@
+* CS5014 Machine Learning
+** Lecture 2 - Types of machine learning
+
+*** Types of machine learning
+- Supervised 
+  - classification
+  - regression
+
+- Unsupervised
+  - clustering 
+
+*** Supervised Learning
+- Use *labelled dataset* to predict the value for unknown outputs given data form the same input features
+- =y= the output, what we want to predict
+- =x= input, the feature set (labelled data)
+
+Error in model is difference between the model and actual value of dataset
+
+**** Regression example
+Given the length of time to grow a pumpkin, what is its diameter
+- Data to predict is usually continuous, if discrete, have to round predicted value to the closest discrete value
+- Do not extrapolate beyond the limits of the data as we will be making assumption of something unknown
+
+**** Overfitting
+If overfitting to dataset, harder to generalise outside of given dataset
+- makes the model less likely to work for test data (prediction)
+
+
+**** Classification (Logistic regression)
++ Decision boundary :: Everything on one side is one classification and another classification on the other side
+
+Possible to have hyper-dimensional decision boundaries (more the 3 features that we care about) which cannot be easily visualised.
+
++ Classification :: the probability it is of some class, not it *is* this class based on distance from the decision boundary.
+
+
+*** Unsupervised Learning
+Using *unlabelled datasets*
+- Don't know what the output is to predict values for
+- Can be used to discover things we don't know about
+- Automatically create clusters in the data to separate them into distinct groups
+
+* CS4402 Constraint Programming
+* CS4204 Concurrency
