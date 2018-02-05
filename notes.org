@@ -1,6 +1,5 @@
 * CS5014 Machine Learning
 ** Lecture 2 - Types of machine learning
-
 *** Types of machine learning
 - Supervised 
   - classification
@@ -17,14 +16,14 @@
 Error in model is difference between the model and actual value of dataset
 
 **** Regression example
-Given the length of time to grow a pumpkin, what is its diameter
+Given the length of time to grow a pumpkin, what is its diameter:
 - Data to predict is usually continuous, if discrete, have to round predicted value to the closest discrete value
 - Do not extrapolate beyond the limits of the data as we will be making assumption of something unknown
 
 **** Overfitting
 If overfitting to dataset, harder to generalise outside of given dataset
 - makes the model less likely to work for test data (prediction)
-
+- fit too much to training dataset rather than new datasets
 
 **** Classification (Logistic regression)
 + Decision boundary :: Everything on one side is one classification and another classification on the other side
@@ -33,12 +32,70 @@ Possible to have hyper-dimensional decision boundaries (more the 3 features that
 
 + Classification :: the probability it is of some class, not it *is* this class based on distance from the decision boundary.
 
-
 *** Unsupervised Learning
 Using *unlabelled datasets*
 - Don't know what the output is to predict values for
 - Can be used to discover things we don't know about
 - Automatically create clusters in the data to separate them into distinct groups
 
+** Lecture 3 - Linear regression intro
+*** Basic equations
++ Input feature :: Thing we are measuring to predict the outcome (eg, x/y variable where we use $x$ to predict $y$, $x$ is the input feature)
+		   
+In linear line equation $y = mx + c$, $m$ and $c$ are $\theta$, where $\theta$ are the *parameters*.
+
+In other words, a linear function $f()$ is defined as
+\begin{equation}
+f(X, \theta) = \theta_{0} + \theta_{1}X_{1}
+\end{equation}
+Often we refer to all parameters as \theta without referring to each individual \theta_{1}, \theta{2}...
+
++ Loss function :: Used to evaluate the quality of the fit without manual inspection. Also known as the cost function. The goal is to reduce the error of the loss function.
+
+The idea is then to try lots of different \theta values with the model and compute the error each time. 
+
+*** Best model automatically
+1. To get the "best" model automatically, we aim to minimise the cost function.
+\begin{equation}
+L(\theta) = \frac{1}{2m}\sum_{i = 1}^{m}(Y - f(X,\theta))^{2}
+\end{equation}
+2. We can plot the cost function to see the minimum of the cost function give values of $x$.
+
+*** Gradient descent
+1. Start with initial values of \theta
+2. Change \theta values and calculate the lost function until the lost function is at a minimum
+   - The issue, is how we know change the parameters such that the error of the lost function decreases
+
+The look at the derivative of the lost function to see if we should increase or decrease the value of \theta. For example if the gradient is negative, we want to increase the \theta values and recalcualte the gradient. 
+
+The *learning rate* \alpha dictates how big an increment to move each step. This provides better more accurate results but is much slower because more steps are needed. (Tradeoff computation time vs accuracy of model)
+
+**** Issue of gradient descent
+There is a problem with gradient descent is a local optimum value where it gets stuck at a trough without finding the global minimum.
+- Can try different initial values to relieve this issue.
+- Can add momentum to roll over the local minima. 
+
+
 * CS4402 Constraint Programming
+** Tutorial 1 
+  
+
 * CS4204 Concurrency
+** Lecture 1
+*** Books
+- Haskell Craft of functional programming, Simon Thompson
+- Parallel Haskell: Lightweight parallelism for heavyweight functional programs
+
+*** Multicore
+- *Processor*: logical rather than physical hardware (processing unit)
+- Shared data bus: contention as all cores use same bus to shared memory
+
+*** Manycore
+- Chain multiple multicores to talk to each other
+- 
+
+*** Concurrency vs parallelism
+- Concurrency is an illusion of parallelism
+- It is possible for a concurrent program to run on a single core but not the other way around
+- 
+
