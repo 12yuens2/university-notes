@@ -77,8 +77,32 @@ There is a problem with gradient descent is a local optimum value where it gets 
 
 
 * CS4402 Constraint Programming
-** Tutorial 1 
-  
+** Lecture 2
+*** Constraint Modelling
+1. Ill-defined problem statement - human level issue where objective is not clear
+2. Well-defined problem statement
+*Abstract constraint model* 
+- View abstractly to extract common features/patterns among different problems 
+- More types of decision variables with sequences/sets etc...
+- Constraints will have to operate on these variables (eg, set operations)
+3. Solver-independednt constraint model
+4. Solver-specific constraint model
+
+Savile row maps steps 3 and 4. *Constraint modelling* is to do with mapping from 2 to 3.
+
+*** Sequences
+- Sequences typically appear in planning problems. 
+- Infinite sequences are an issue as we need a finite-domain to create a constraint solver problem
+- Try to be smart and find a bound by reading the problem carefully.
+
+** Lecture 3
+*** Sets
+- Equilavent sets: {1,2,3} and {2,3,1}. Modelling step for sets again introduce *equivalence class* of assignments.
+- Example solution, canonical element must be in ascending order
+
+Can use *occurence representation* as this representation does not introduce equivalence classes.
+
+
 
 * CS4204 Concurrency
 ** Lecture 1
