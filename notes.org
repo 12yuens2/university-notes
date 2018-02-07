@@ -75,6 +75,79 @@ There is a problem with gradient descent is a local optimum value where it gets 
 - Can try different initial values to relieve this issue.
 - Can add momentum to roll over the local minima. 
 
+** Lecture 4 - Algoithms and Python 
+Running a simple linear regression example in python to see difference between theory and practice.
+- There are many practical considerations compared to theory, especially to do with preparing data to prevent floating point or division by zero errors.
+- Also issues with reshaping data matrices to fit or noramlising data.
+*** Importing needed modules
+#+BEGIN_SRC python
+  import numpy as np
+  import matplotlib.pyplot as plt
+  from mpl_toolkits.mplot3d import Axes3D
+#+END_SRC
+`matplotlib` for plotting and `Axes3D` for 3D plots.
+
+
+*** Loading data
+- Use `numpy` to get a matrix from text(data) file.
+#+BEGIN_SRC python
+  # Load matrix from file
+  data = np.loadtxt("data.txt")
+
+  # Extract inputs and outputs
+  x = data[:, 1]
+  y = data[:, 2]
+
+  x = np.c_[np.ones_like(x), x]
+#+END_SRC
+- We prepend a column of 1s to the data to make for a nicer dot product.
+
+*** Plotting the data
+Create a plot of the data with `matplotlib`
+#+BEGIN_SRC python
+  # Get figure and axes
+  fig, ax = plt.subplots()
+
+  # Create scatter plot
+  ax.scatter(x[:,1], y)
+  ax.set_xlabel("Height")
+  ax.set_ylabel("Weight")
+
+  plt.show()
+#+END_SRC
+- Visualising the data helps to quickly check if our model may fit. For example, we can see if the general trend is roughly a line so we know a linear model could work
+
+*** Define a model
+
+#+BEGIN_SRC python
+  def f(x, theta):
+      y_hat = []
+
+      for sample in x:
+          y_acc = 0
+          for i in range(len(sample)):
+              y_acc = y_acc + theta[i] * sample[i]
+
+          y_hat.append(y_acc)
+
+      return np.array(y_hat)
+#+END_SRC
+
+*** Plot the model against the data
+- Put some arbitrary parameters for theta and plot both the model and the data to see visually how they compare
+- Now we need our cost function and optimise with the function to incrementally calculate our parameters
+
+*** Define a cost function
+
+#+BEGIN_SRC python
+  # Return the cost (one value per sample)
+  def squaredError(y, y_hat):
+      return (y - y)hat)**2
+
+  # Return mean squared error (average over all samples)
+  def meanSquaredError(y, y_hat):
+      return squaredError(y, y_hat).mean()
+#+END_SRC
 
 * CS4402 Constraint Programming
 ** Lecture 2
