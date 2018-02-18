@@ -1,0 +1,311 @@
+* CS5014 Machine Learning
+** Lecture 2 - Types of machine learning
+*** Types of machine learning
+- Supervised 
+  - classification
+  - regression
+
+- Unsupervised
+  - clustering 
+
+*** Supervised Learning
+- Use *labelled dataset* to predict the value for unknown outputs given data form the same input features
+- =y= the output, what we want to predict
+- =x= input, the feature set (labelled data)
+
+Error in model is difference between the model and actual value of dataset
+
+**** Regression example
+Given the length of time to grow a pumpkin, what is its diameter:
+- Data to predict is usually continuous, if discrete, have to round predicted value to the closest discrete value
+- Do not extrapolate beyond the limits of the data as we will be making assumption of something unknown
+
+**** Overfitting
+If overfitting to dataset, harder to generalise outside of given dataset
+- makes the model less likely to work for test data (prediction)
+- fit too much to training dataset rather than new datasets
+
+**** Classification (Logistic regression)
++ Decision boundary :: Everything on one side is one classification and another classification on the other side
+
+Possible to have hyper-dimensional decision boundaries (more the 3 features that we care about) which cannot be easily visualised.
+
++ Classification :: the probability it is of some class, not it *is* this class based on distance from the decision boundary.
+
+*** Unsupervised Learning
+Using *unlabelled datasets*
+- Don't know what the output is to predict values for
+- Can be used to discover things we don't know about
+- Automatically create clusters in the data to separate them into distinct groups
+
+** Lecture 3 - Linear regression intro
+*** Basic equations
++ Input feature :: Thing we are measuring to predict the outcome (eg, x/y variable where we use $x$ to predict $y$, $x$ is the input feature)
+		   
+In linear line equation $y = mx + c$, $m$ and $c$ are $\theta$, where $\theta$ are the *parameters*.
+
+In other words, a linear function $f()$ is defined as
+\begin{equation}
+f(X, \theta) = \theta_{0} + \theta_{1}X_{1}
+\end{equation}
+Often we refer to all parameters as \theta without referring to each individual \theta_{1}, \theta{2}...
+
++ Loss function :: Used to evaluate the quality of the fit without manual inspection. Also known as the cost function. The goal is to reduce the error of the loss function.
+
+The idea is then to try lots of different \theta values with the model and compute the error each time. 
+
+*** Best model automatically
+1. To get the "best" model automatically, we aim to minimise the cost function.
+\begin{equation}
+L(\theta) = \frac{1}{2m}\sum_{i = 1}^{m}(Y - f(X,\theta))^{2}
+\end{equation}
+2. We can plot the cost function to see the minimum of the cost function give values of $x$.
+
+*** Gradient descent
+1. Start with initial values of \theta
+2. Change \theta values and calculate the lost function until the lost function is at a minimum
+   - The issue, is how we know change the parameters such that the error of the lost function decreases
+
+The look at the derivative of the lost function to see if we should increase or decrease the value of \theta. For example if the gradient is negative, we want to increase the \theta values and recalcualte the gradient. 
+
+The *learning rate* \alpha dictates how big an increment to move each step. This provides better more accurate results but is much slower because more steps are needed. (Tradeoff computation time vs accuracy of model)
+
+**** Issue of gradient descent
+There is a problem with gradient descent is a local optimum value where it gets stuck at a trough without finding the global minimum.
+- Can try different initial values to relieve this issue.
+- Can add momentum to roll over the local minima. 
+
+** Lecture 4 - Algoithms and Python 
+Running a simple linear regression example in python to see difference between theory and practice.
+- There are many practical considerations compared to theory, especially to do with preparing data to prevent floating point or division by zero errors.
+- Also issues with reshaping data matrices to fit or noramlising data.
+*** Importing needed modules
+#+BEGIN_SRC python
+  import numpy as np
+  import matplotlib.pyplot as plt
+  from mpl_toolkits.mplot3d import Axes3D
+#+END_SRC
+`matplotlib` for plotting and `Axes3D` for 3D plots.
+
+*** Loading data
+- Use `numpy` to get a matrix from text(data) file.
+#+BEGIN_SRC python
+  # Load matrix from file
+  data = np.loadtxt("data.txt")
+
+  # Extract inputs and outputs
+  x = data[:, 1]
+  y = data[:, 2]
+
+  x = np.c_[np.ones_like(x), x]
+#+END_SRC
+- We prepend a column of 1s to the data to make for a nicer dot product.
+
+*** Plotting the data
+Create a plot of the data with `matplotlib`
+#+BEGIN_SRC python
+  # Get figure and axes
+  fig, ax = plt.subplots()
+
+  # Create scatter plot
+  ax.scatter(x[:,1], y)
+  ax.set_xlabel("Height")
+  ax.set_ylabel("Weight")
+
+  plt.show()
+#+END_SRC
+- Visualising the data helps to quickly check if our model may fit. For example, we can see if the general trend is roughly a line so we know a linear model could work
+
+*** Define a model
+
+#+BEGIN_SRC python
+  def f(x, theta):
+      y_hat = []
+
+      for sample in x:
+          y_acc = 0
+          for i in range(len(sample)):
+              y_acc = y_acc + theta[i] * sample[i]
+
+          y_hat.append(y_acc)
+
+      return np.array(y_hat)
+#+END_SRC
+
+*** Plot the model against the data
+- Put some arbitrary parameters for theta and plot both the model and the data to see visually how they compare
+- Now we need our cost function and optimise with the function to incrementally calculate our parameters
+
+*** Define a cost function
+
+#+BEGIN_SRC python
+  # Return the cost (one value per sample)
+  def squaredError(y, y_hat):
+      return (y - y)hat)**2
+
+  # Return mean squared error (average over all samples)
+  def meanSquaredError(y, y_hat):
+      return squaredError(y, y_hat).mean()
+#+END_SRC
+    
+** Lecture 5 - Regression part 2
+*** More than 1 feature
+Linear model can have many features (multivariate linear regression). It can be extended to $n$ features with $n$ \theta parameters.
+\begin{equation} 
+f(x) = \theta_{0} + \theta_{1}x_{1} + \theta_{2}x_{2} + ... \theta_{n}x_{n}
+\end{equation}
+
+To represent our $X$s and $\theta$s, we can put them in matrix form:
+\begin{equation}
+X = \begin{bmatrix}
+X_{0} \\
+X_{1} \\
+X_{2} \\
+\vdots \\
+X_{n}
+\end{bmatrix}
+\end{equation}
+
+Update all $\theta$s at once every step rather than seperately.
+
+*** Feature scaling
+Because there can be very different scales between different features, the larger values may dominate the model. This ensures that features(inputs) have the same input range. This can typically be done by normalising the values to get all scales inputs to be between -1 and 1.
+- Values can be a bit out, no necessarily -1 and 1, as long as they are in the same kind of ranges 
+- Eg, $-3 \leq x \leq 3$ is okay, but not $-100 \leq x \leq 100$
+
+The simplest way to scale is to divide all values by the maximum.
+
+*** Polynomial regression
+Have to define model equation with different polynomials for input/x values.
+For example:
+\begin{equation}
+f(x) = \theta_{0} + \theta_{1}x_{1} + \theta_{2}x_{2} + \theta_{3}x_{3}
+\end{equation}
+becomes
+\begin{equation}
+f(x) = \theta_{0} + \theta{1}x_{1} + \theta_{2}(x_{2})^{2} + \theta_{3}(x_{3})^_{3}
+\end{equation}
+
+** Lecture 6 - Normal equation and logisitical regression
+*** Normal equation
+Another approach to determine \theta values analytically with the equation:
+\begin{equation}
+\theta = (X^{T}X)^{-1}X^{T}y
+\end{equation}
+Solves by finding when the gradient of the loss function is 0 and therefore a trough. Doesn't really do this as it would find local minima and any maxima.
+*** Logistic regression
+Classifying, eg cancer or not cancer
+* CS4402 Constraint Programming
+** Lecture 2
+*** Constraint Modelling
+1. Ill-defined problem statement - human level issue where objective is not clear
+2. Well-defined problem statement
+*Abstract constraint model* 
+- View abstractly to extract common features/patterns among different problems 
+- More types of decision variables with sequences/sets etc...
+- Constraints will have to operate on these variables (eg, set operations)
+3. Solver-independednt constraint model
+4. Solver-specific constraint model
+
+Savile row maps steps 3 and 4. *Constraint modelling* is to do with mapping from 2 to 3.
+
+*** Sequences
+- Sequences typically appear in planning problems. 
+- Infinite sequences are an issue as we need a finite-domain to create a constraint solver problem
+- Try to be smart and find a bound by reading the problem carefully.
+
+** Lecture 3
+*** Sets
+- Equilavent sets: {1,2,3} and {2,3,1}. Modelling step for sets again introduce *equivalence class* of assignments.
+- Example solution, canonical element must be in ascending order
+
+Can use *occurence representation* as this representation does not introduce equivalence classes.
+
+
+
+
+** Practical 1 notes
+Part 3 mazes:
+- maze with one path but many steps
+- maze with many paths but few steps
+
+ 
+* CS4204 Concurrency
+** Lecture 1
+*** Books
+- Haskell Craft of functional programming, Simon Thompson
+- Parallel Haskell: Lightweight parallelism for heavyweight functional programs
+- Programming in Haskell, Graham Hutton
+
+*** Multicore
+- *Processor*: logical rather than physical hardware (processing unit)
+- Shared data bus: contention as all cores use same bus to shared memory
+
+*** Manycore
+- Chain multiple multicores to talk to each other
+- 
+
+*** Concurrency vs parallelism
+- Concurrency is an illusion of parallelism
+- It is possible for a concurrent program to run on a single core but not the other way around
+- 
+
+
+** Lecture 2
+*** Tuple
+(1,"a", 1.2)
+- Each element can be of different types
+#+BEGIN_SRC haskell
+(1, "a", 1.2) :: (Num a, Fractional b) => (a, [char], b)
+#+END_SRC
+
+*** Lists
+[1,2,3]
+- Lists must be of the same type
+- Must always have a time, unlike tuple
+#+BEGIN_SRC haskell
+() :: () -- empty tuple
+[] :: [t] -- empty list
+#+END_SRC
+ 
+
+** Lecture 3 Basic parallel haskell constructs
+*** Concurrency vs parallelism
+Concurrency is the illusion that tasks are happening at the same time
+- eg doing tasks fast enough to appear things are happening in parallel
+- Concurrent threads can be executed sequentially *or* in parallel
+- Certain things cannot happen in concurrency, for example need for locks because the sequence matters
+
+
+Parallelism is really doing tasks in parallel.
+- We want to be efficieny in terms of energy. Do more with less energy(battery)
+- Parallelism should be interleaved without any issue
+- Parallelism is executing simultaneously on separate hardware devices.
+
+*** Threads vs processes
+Process made up of many threads.
+Eg, Jh group vs each individual student
+
+Process thread model don't have registers so that it is not bound to hardware. 
+- If threads have a register set, then only so many threads can be run on some hardware.
+
+*Threads* run at the basic level on the system. They work together to form a process.
+
+*Filaments* wind together to form threads. Computation with no communication.
+- Filaments don't neccesarily need context switching if they are small enough because they will terminate with a result.
+- Still dangerous if large computation
+
+*** Granularity
+How big or small something is. 
+- Is it fine grained or coarse grained
+- Too coarse grained means not enough parallelism, too fine grained maybe too much parallelsim
+- Main issue with parallelism is to determine dependencies between tasks.
+
+*** Amdahl's Law
+- The need for sequential operations heavily dominates computation
+- Need a lot of parallelism to get any good speed up
+
+*** Parallel Haskell
+Evaluate and die
+- No need to spark new threads if not enough hardware
+- Shared spark pool leads to single point of contention
