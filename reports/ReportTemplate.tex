@@ -1,0 +1,110 @@
+\documentclass{article}
+\usepackage{color}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{syntax}
+\usepackage{csquotes}
+\usepackage{pgfplots}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{vmargin}
+%\usepackage[backend=biber]{biblatex}
+%\addbibresource{references.bib}
+
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+
+\lstset{frame=tb,
+  numbers=left,
+  stepnumber=1,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numberstyle=\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=2,
+  moredelim=**[is][\color{red}]{@}{@},
+}
+
+\setlength{\grammarindent}{12em}
+
+%\renewcommand{\lstlistingname}{Algorithm}
+%\newcommand{\tablerow}[4]{ #1 & #2 & #3 & #4\\}
+\newcommand{\n}[0]{\\[\baselineskip]}
+
+%
+% #1 - Module code
+\newcommand{\maketitlepage}[2]{
+\begin{titlepage}
+	\centering
+    \includegraphics[scale = 0.4]{01-standard-vertical-black.png}\\	% University Logo
+	\textsc{\LARGE #1}\\[0.5 cm]				% Course Code
+	\rule{\linewidth}{0.2 mm} \\[0.4 cm]
+	{ \huge \bfseries \thetitle}
+	\rule{\linewidth}{0.2 mm} \\[0.5 cm]
+	\textsc{\large \thedate}\\[1.5 cm]
+	
+	\begin{minipage}{0.4\textwidth}
+		\begin{flushleft} \large
+			\emph{Lecturer:}\\
+			#2
+			\end{flushleft}
+			\end{minipage}~
+			\begin{minipage}{0.4\textwidth}
+            
+			\begin{flushright} \large
+			\emph{Submitted By :} \\
+			\theauthor
+		\end{flushright}
+        
+	\end{minipage}\\[2 cm]
+	
+\end{titlepage}
+}
+
+\title{Title of report}
+\author{140011146}
+
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author
+\let\thedate\@date
+\makeatother
+
+\begin{document}
+
+
+\maketitlepage{CS4402}{Ian Miguel}
+
+
+
+
+\section{Introduction}
+
+\section{Design and Implementation}
+
+\section{Results}
+
+\section{Conclusion and evaluation}
+
+%\printbibliography
+
+\end{document}
+
+
+
