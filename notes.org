@@ -194,7 +194,31 @@ Another approach to determine \theta values analytically with the equation:
 \end{equation}
 Solves by finding when the gradient of the loss function is 0 and therefore a trough. Doesn't really do this as it would find local minima and any maxima.
 *** Logistic regression
-Classifying, eg cancer or not cancer
+- Classifying, eg cancer or not cancer.
+- Use a sigmoid function, value betwen 0 and 1, like a switch to decide between binary values
+
+** Lecture 7 - Logisitic regression 2
+*** Decision boundaries
+\begin{equation}
+h(x) = g(\theta^{T}x) = \frac{1}{1 + e^{-\thetaTx}}
+\end{equation}
+$h(x)$ is the probability that y = 1 on input x.
+- Probability is never 0 or 1, but could be very close, like 0.999999. This is because we are never 100% sure of every classification. Just a very high probability
+*** Cost function for logisitic regression
+Need different cost function from linear regression. 
+- Use two log functions so the value of the cost function tends to 0 for correct predictions and tends to \infinity for incorrect predictions.
+
+Optimising parameter \theta
+$x^{(i)} is not power, is index to input values x[i]
+
+*** Gradient descent for logisitic regression
+Use same gradient descent to incrementaly reduce error
+
+*** Multiclass for logisitic regression
+One-vs-all method:
+- When there are multiple classes, only look for one. Either 1 class or all other classes (multiclass -> binary)
+- Repeat for all other classes
+- Generate different probability for each classification and get the highest one
 * CS4402 Constraint Programming
 ** Lecture 2
 *** Constraint Modelling
@@ -220,6 +244,19 @@ Savile row maps steps 3 and 4. *Constraint modelling* is to do with mapping from
 - Example solution, canonical element must be in ascending order
 
 Can use *occurence representation* as this representation does not introduce equivalence classes.
+Switches multiply by values
+
+**** Example
+Explicit:
+|    1 |    2 |    3 | ... |    n |
+| 0..9 | 0..9 | 0..9 | ... | 0..9 |
+
+Switches (occurence)
+|   1 |   2 |   3 | ... | n   |
+| 0,1 | 0,1 | 0,1 | ... | 0,1 |
+
+*Implied constraint* Add implied constraints explicitly even if other constraints already form it in the model to help the solver.
+
 
 
 
