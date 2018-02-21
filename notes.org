@@ -219,6 +219,31 @@ One-vs-all method:
 - When there are multiple classes, only look for one. Either 1 class or all other classes (multiclass -> binary)
 - Repeat for all other classes
 - Generate different probability for each classification and get the highest one
+** Lecture 8 - Regularization
+*** Preventing overfitting
+- Reduce features manually by choosing which ones to use from dataset (perhaps use less)
+- Reduce automatically by changing feature space
+
+*Regularization* where we want to prevent overfitting but keep all features
+- do so by reducing the effect of each feature
+
+*** Regularization for linear regression
+Idea is to penalise parameters.
+eg, $ + 1000\theta_{3} + 1000\theta_{4}$. This will cause the \theta parameters to be minimised because of the increased constant, but does not completely remove the features.
+
+\lambda is the regularization parameter
+- If \lambda is too large, then we may underfit as we have minimised the \theta parameters too much
+- If \lambda is too small, then we may continue ot overfit as we have not minimised \thetas enough
+
+Regularization parameter can also be added to the normal equation
+
+*** Process
+- Generate as simple a model as possible
+- Check errors (cost function) is low
+- Use trained model and test data to see if it works
+- If not, try other models (higher order functions)
+*** Regularization for logisitic regression
+
 * CS4402 Constraint Programming
 ** Lecture 2
 *** Constraint Modelling
@@ -257,16 +282,42 @@ Switches (occurence)
 
 *Implied constraint* Add implied constraints explicitly even if other constraints already form it in the model to help the solver.
 
+** Lecture 4
+*** Multisets
+Like sets, but repetition is allowed
+- Have to be careful as domain can be unbounded due to infinite repetition
 
+*** Relation
+Cross product of set to get tuples which can be assigned true or false
 
+3d matrix for relation representation (A x B x C)
+- Not enough space to express more relations
+eg if there is (1,2,4) relation, cannot place (1,2,5) relation -> Therefore need 3 dimensions
 
+|   |       2 | 3 | 4 |
+| 1 | {4,5,6} |   |   |
+| 2 |         |   |   |
+| 3 |         |   |   |
+Values of A on the rows and B on the columns to express relation to values of C.
+
+*** Function
+Mapping set of inputs to outputs
+
+*Total functon* - everything is directly mapped
+
+Again use dummy value 0 for partial explicit injection. Not very messy, but not as nice as occurence relation.
+
+*Surjection* - All elements of codomain are used
 
 ** Practical 1 notes
 Part 3 mazes:
 - maze with one path but many steps
 - maze with many paths but few steps
+- see what happens with more steps than required for solution
+- 
 
- 
+Extension: Model the problem from a different viewpoint (different variables/solutions) and compare against given model
+
 * CS4204 Concurrency
 ** Lecture 1
 *** Books
@@ -287,7 +338,6 @@ Part 3 mazes:
 - It is possible for a concurrent program to run on a single core but not the other way around
 - 
 
-
 ** Lecture 2
 *** Tuple
 (1,"a", 1.2)
@@ -305,7 +355,6 @@ Part 3 mazes:
 [] :: [t] -- empty list
 #+END_SRC
  
-
 ** Lecture 3 Basic parallel haskell constructs
 *** Concurrency vs parallelism
 Concurrency is the illusion that tasks are happening at the same time
