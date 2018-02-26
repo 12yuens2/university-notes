@@ -244,6 +244,31 @@ Regularization parameter can also be added to the normal equation
 - If not, try other models (higher order functions)
 *** Regularization for logisitic regression
 
+** Lecture 9 - Evaluation
+*** Source of errors
+- Not enough data
+  -> overfit to data and cannot generalise
+- Fine tuning parameters on 'test' data
+- Testing data only tested once
+- Use validation set for fine tuning parameters 
+
+Coefficient of determination (R^{2}) can be negative as its not really squared
+- If negative, that means the model is not very good
+
+*** Classification errors
+Good thing about classification is that there are only a certain kinds of errors, because the classification is either right or wrong, no need to worry about how close/far the predicted value is.
+
+- Use number of correct classifications as proportion to the total is the accuracy
+- Precision and recall depend on your priorities, for example may have more bias towards false positives in some cases like cancer.
+
+*** Evaluating performance of models
+
+
+*** Cross-validation
+- Cross validation uses validation data to tune model without looking at test data
+- Do many validation sets, eg 5-fold cross validation -> 5 sets with 1 different set as validation each time
+
+*** Common pitfalls
 * CS4402 Constraint Programming
 ** Lecture 2
 *** Constraint Modelling
@@ -395,3 +420,50 @@ How big or small something is.
 Evaluate and die
 - No need to spark new threads if not enough hardware
 - Shared spark pool leads to single point of contention
+** Lecture 4 Locks and lock-free
+*** System model - shared memory
+*Memory hierarchy*
+- Software threads, scheduled by the OS
+- Processing unit, hardware thread of execution
+- Physical resources shared through hyperthreading
+- Chips running the hardware threads accessing shared memory
+
+*Correctness* Must write to correct places in memory or things go wrong quickly!
+
+*** Locks
+Basic building block mechanism. 
+- ~compareAndSwap~ used to build more complicated locking mechanisms
+- Implemented in the assembly languages
+
+- Need for locks means there is somewhere in the program where there is contention
+- Perhaps better to reduce contention rather than having to worry about locks
+
+**** Issues
+- Busywait
+#+BEGIN_SRC 
+while(accquire_lock(lock)) {
+    //do things
+}
+#+END_SRC
+Process keeps looping try to get the lock when another process currently holds the lock
+- To improve, can loop around waiting without looping the test and set
+- Do not try to testAndSet until the lock is free, rather than trying even when it is held
+- Better because only need read access (can be shared among other threads)
+- All threads rush to accquire the lock once it is freed
+
+Use exponential back-off algorithms to prevent everyone trying to accquire at the same time
+- Bias towards most recent threads as they will have smaller #c# valuse
+
+Lock master as a 'scheduler' to choose first threads go enxt
+
+
+- If have to wait for a *very* long time, may want to put thread to sleep instead of letting it busy loop
+- Only worth if the cost of context switching is less than the waste computation of busy looping
+
+*** Queue-based locks
+- Smoother way of having threads accquire locks
+- No thundering herd as only the thread at the tail of the queue gets woken up
+
+
+*** Lock-free algorithms
+- Allow recovery when threads who 'own' the lock die without releasing the lock
