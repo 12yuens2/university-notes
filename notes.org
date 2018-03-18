@@ -269,6 +269,32 @@ Good thing about classification is that there are only a certain kinds of errors
 - Do many validation sets, eg 5-fold cross validation -> 5 sets with 1 different set as validation each time
 
 *** Common pitfalls
+
+** Lecture 10 - Data preparation
+Need some way to turn qualitative input features such as colours into numerical values.
+- Using enumeration causes implied simiarlity between features, eg red - 1, blue - 2 means distance between the two colours have a value
+
+** Lecture 11 - Basis Expansions
+*** Basis expansion
+- Define basis functions $h_{m}(X)$ on input $X$
+- Functions used to construct larger space of functions. 
+For example
+$h_{1}(X) = 1$, $h_{2}(X) = X$, $h_{3}(X) = X^{2}$
+forms the basis of any 2nd degree polynomial as a linear combination.
+- Instead of linear model $f(X) + \beta_{0} + \beta_{1}X$
+
+Ridge and lasso regression when using linear regression with different regularisation
+- Only need to optimise for one parameter (regularisation \lambda) rather than all \thetas
+- Lasso regression could reduce weights to 0
+
+** Lecture 12 - Bayesian classification
+- Histogram very crude and sensitive because if points lie on histogram boundaries then could be low/high
+probabilistic models are known as non-parametric models
+-> Do not need to fit an ideal model by training and finding parameters
+-> No need to train, but more time taken to process data
+
+** Lecture 13 - Maximal Margin Classifiers
+
 * CS4402 Constraint Programming
 ** Lecture 2
 *** Constraint Modelling
@@ -334,6 +360,41 @@ Again use dummy value 0 for partial explicit injection. Not very messy, but not 
 
 *Surjection* - All elements of codomain are used
 
+** Lecture 5 - Symmetry
+- Symmetry preserves solutions
+If there is a solution, symmetrical instances will also have solutions and vice versa.
+
+Use symmetry breaking constraints to remove symmetry from the problem, so we can prune the search tree
+
+Because of symmetry permutations, requires factorial number of constraints
+** Week 6 tutorial
+Q2)
+[0,0,1]
+[1,1,0]
+
+[0,1,1]
+[1,0,0]
+
+Q3)
+[0,1,1]
+[1,0,0]
+[1,0,0]
+
+[1,1,0]
+[0,0,1]
+[0,0,1]
+
+[0,0,1]
+[0,0,1]
+[1,1,0]
+
+[0,0,1]
+[0,0,1]
+[1,1,0]
+
+** Lecture 6
+*** Branching
+
 ** Practical 1 notes
 Part 3 mazes:
 - maze with one path but many steps
@@ -342,6 +403,25 @@ Part 3 mazes:
 - 
 
 Extension: Model the problem from a different viewpoint (different variables/solutions) and compare against given model
+
+
+** Lecture 11 - Search
+There are other methods of search that are nor systematic
+- does not guarantee going through entire space, but searches much faster
+
+*** Definitions
+d-way branching
+- a child node in the tree for each value in the domain
+
+2-way/binary branching
+- only ever have two branches
+- on left branch, make assignment of variable
+- on right branch, csp where domain doesn't have the left branch's assignment
+  - remove left assignment from domain rather than do another assignment
+
+- Removals from domains must be undone when coming back up from the search tree
+
+*** Methods
 
 * CS4204 Concurrency
 ** Lecture 1
@@ -460,10 +540,71 @@ Lock master as a 'scheduler' to choose first threads go enxt
 - If have to wait for a *very* long time, may want to put thread to sleep instead of letting it busy loop
 - Only worth if the cost of context switching is less than the waste computation of busy looping
 
-*** Queue-based locks
-- Smoother way of having threads accquire locks
-- No thundering herd as only the thread at the tail of the queue gets woken up
-
-
+*** Queue-based locks - Smoother way of having threads accquire locks - No thundering herd as only the thread at the tail of the queue gets woken up 
 *** Lock-free algorithms
 - Allow recovery when threads who 'own' the lock die without releasing the lock
+
+** Lecture 5 Patterns and data parallelism
+*** Parallel patterns
+*Patterns can have different implementations*
+Eg map has a parallel pattern:
+Parallel map - spark for each element in the map
+Task farm - only as many parallel threads as there are parallel workers
+
+*** Data parallelism
+Apply parallelism to each element of data
+- regular structure
+- easy to reason about performance
+
+Data parallelism works well on GPUs because of fine-grain
+
+*** Task parallelism
+Parallelism from the control of the program rather than structure of the data.
+Eg, divide and conquer
+
+
+*** BSP
+- Synchronisation by barrier
+  - Wait until all exchange is done before any thread starts again
+  - Potentially very expensive is many cores are bloced waiting for the end of exchange
+
+- Easy to construct timing model for BSP
+  - Get time for each superstep and time for each exchange
+
+
+
+Threadscope for system usage visualisation
+ghc -eventlog
+./prog +RTS -ls -lf
+
+
+-feager-blackholing
+
+- Irregular computation means some cores may be idle/waiting, so not full usage
+
+** Lecture 6 - Task parallelism
+- Because task parallelism is less regular, harder to find patterns like data parallelism
+- Unfortunately not all problems in the real world are data parallel, so need to figure out how to parallelise by task
+
+*** Producer/consumer
+- Only works with streams of results
+- Otherwise it is just sequential
+
+
+*** Divide and conquer
+- Divide and conquer with threshold
+  > Below threshold do sequentially
+
+*** Task Farm
+Allocate all tasks to workers
+- can get on with the next task if one worker finishes early
+- better load balance as can choose number of workers to number of cores
+
+flag
+
+** Lecture 7 - Skeletons
+Skeleton - specific implementation of patterns of parallelism
+- Patterns are design time ideas (thoughts)
+- Skeletons are specific implementations of skeletons
+
+Should think of patterns and not skeletons, otherwise will be driven to using/sticking with skeleton rather than how the pattern should be applied
