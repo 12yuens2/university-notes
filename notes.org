@@ -295,6 +295,9 @@ probabilistic models are known as non-parametric models
 
 ** Lecture 13 - Maximal Margin Classifiers
 
+** Lecture 15 - Neutral Networks part 1
+
+
 * CS4402 Constraint Programming
 ** Lecture 2
 *** Constraint Modelling
@@ -422,6 +425,47 @@ d-way branching
 - Removals from domains must be undone when coming back up from the search tree
 
 *** Methods
+
+*** AC3
+- Instead of having to do many full iterations like in AC1, only add new arc checks to the queue if a change in a domain affects other domains with connected arcs.
+- Fully connected structures are the pathological case because every domain has to be revised (added to the queue) every time, but still more efficient that always revising every single arc
+
+
+** Lecture 12
+*** Forward checking 2 way version (to implement for practical)
+#+BEGIN_SRC 
+var = selectVar(varList)
+val = selectVal(var.domain)
+#+END_SRC
+
+Both selection of variable from list and value chosen from domain can be chosen using some heuristics
+
+**** Left branch
+#+BEGIN_SRC 
+reviseFutureArcs(varList, var)
+#+END_SRC
+reviseFutureArcs can do some pruning, so it must be undone if the branch returns without successful complete assignment
+
+
+**** Right branch
+Still have to reviseFutureArcs even after deleting the value from the domain
+- Because deletion could cause issues with other arcs (consistency)
+
+**** Implement basic backtracking
+Can implement basic backtracking in addition to forward checking/pruning
+- Use to check that answers are correct
+- Use for empirical testing to compare the two methods
+
+**** Implement different heuristics
+- Different heuristics (simple/complex) can be implemented and compared for practical
+
+
+*** Heuristics
+**** Static variable heuristics
+
+**** Dynamic heuristics
+Heuristics that change based on the current state
+- Eg, smallest-domain as it changes based on removed/assigned values in variable domain
 
 * CS4204 Concurrency
 ** Lecture 1
