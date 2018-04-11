@@ -295,9 +295,24 @@ probabilistic models are known as non-parametric models
 
 ** Lecture 13 - Maximal Margin Classifiers
 
-** Lecture 15 - Neutral Networks part 1
+** Lecture 15 - Neural Networks part 1
+** Lecture 16 - Neural Networks part 2
 
+- Difficult to deal with "none of the above" classification especially if training does not include "none of the above" examples
+** Lecture 17 - Unsupervised learning part 1
+** Lecture 18 - Unsupervised learning part 2
+*** K means cluster
+- Find closest k points that are closest to $\mu$ data point
+- Issue with randomly putting centroids in bad positions makes them get stuck at local maxima
+- Repeat the algorithm many times for more random positions
+- Choose clustering with lowest cost
 
+Reduce dimensionality
+- Data compression for sending data across networks
+
+*** Principle Components Analysis (PCA)
+- Get improvements in computation time, but not accuracy
+- Finds lower dimensional surface to reduce dimensionality
 * CS4402 Constraint Programming
 ** Lecture 2
 *** Constraint Modelling
@@ -466,6 +481,27 @@ Can implement basic backtracking in addition to forward checking/pruning
 **** Dynamic heuristics
 Heuristics that change based on the current state
 - Eg, smallest-domain as it changes based on removed/assigned values in variable domain
+
+
+
+** Lecture 13 - Beyond AC3
+*** MAC (Maintaining Arc Consistency)
+- Make sure arc remains consistent after every assignment
+- The arcs in the queue for this is the same as in forward checking
+- Because only the arcs in forward checking are the ones that could have been changed that need to be revised
+
+AC3 can add arcs to the queue that are not going to do anything
+- Two ways of solving this
+
+*** AC4 Fine grained
+- Keep a counter for number of supports for each arc pair 
+- More information stored in counters to avoid putting things in queue
+- Delete is counter reaches 0 (no supports)
+
+Trade off of AC3 vs AC4
+- AC4 is space trade off for time, requires more memory for counters and dictionaries
+
+*** Looking forward vs looking back
 
 * CS4204 Concurrency
 ** Lecture 1
@@ -652,3 +688,15 @@ Skeleton - specific implementation of patterns of parallelism
 - Skeletons are specific implementations of skeletons
 
 Should think of patterns and not skeletons, otherwise will be driven to using/sticking with skeleton rather than how the pattern should be applied
+
+** Lecture 8 - Evaluation strategies
+Laziness and parallelism go in opposite directions
+Laziness - Only evaluation when needed
+Parallelism - Evaluate before its needed
+
+Evaluation strategies are a way to fight the laziness
+
+~rdeepseq~ forces eager evaluation
+- Using different evaluation strategies gives more control, eg can use r0 to do no evaluation on the left side of a list and use rseq for evaluation on the right side
+
+Monad
