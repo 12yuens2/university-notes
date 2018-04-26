@@ -194,7 +194,125 @@ Another approach to determine \theta values analytically with the equation:
 \end{equation}
 Solves by finding when the gradient of the loss function is 0 and therefore a trough. Doesn't really do this as it would find local minima and any maxima.
 *** Logistic regression
-Classifying, eg cancer or not cancer
+- Classifying, eg cancer or not cancer.
+- Use a sigmoid function, value betwen 0 and 1, like a switch to decide between binary values
+
+** Lecture 7 - Logisitic regression 2
+*** Decision boundaries
+\begin{equation}
+h(x) = g(\theta^{T}x) = \frac{1}{1 + e^{-\thetaTx}}
+\end{equation}
+$h(x)$ is the probability that y = 1 on input x.
+- Probability is never 0 or 1, but could be very close, like 0.999999. This is because we are never 100% sure of every classification. Just a very high probability
+*** Cost function for logisitic regression
+Need different cost function from linear regression. 
+- Use two log functions so the value of the cost function tends to 0 for correct predictions and tends to \infinity for incorrect predictions.
+
+Optimising parameter \theta
+$x^{(i)} is not power, is index to input values x[i]
+
+*** Gradient descent for logisitic regression
+Use same gradient descent to incrementaly reduce error
+
+*** Multiclass for logisitic regression
+One-vs-all method:
+- When there are multiple classes, only look for one. Either 1 class or all other classes (multiclass -> binary)
+- Repeat for all other classes
+- Generate different probability for each classification and get the highest one
+** Lecture 8 - Regularization
+*** Preventing overfitting
+- Reduce features manually by choosing which ones to use from dataset (perhaps use less)
+- Reduce automatically by changing feature space
+
+*Regularization* where we want to prevent overfitting but keep all features
+- do so by reducing the effect of each feature
+
+*** Regularization for linear regression
+Idea is to penalise parameters.
+eg, $ + 1000\theta_{3} + 1000\theta_{4}$. This will cause the \theta parameters to be minimised because of the increased constant, but does not completely remove the features.
+
+\lambda is the regularization parameter
+- If \lambda is too large, then we may underfit as we have minimised the \theta parameters too much
+- If \lambda is too small, then we may continue ot overfit as we have not minimised \thetas enough
+
+Regularization parameter can also be added to the normal equation
+
+*** Process
+- Generate as simple a model as possible
+- Check errors (cost function) is low
+- Use trained model and test data to see if it works
+- If not, try other models (higher order functions)
+*** Regularization for logisitic regression
+
+** Lecture 9 - Evaluation
+*** Source of errors
+- Not enough data
+  -> overfit to data and cannot generalise
+- Fine tuning parameters on 'test' data
+- Testing data only tested once
+- Use validation set for fine tuning parameters 
+
+Coefficient of determination (R^{2}) can be negative as its not really squared
+- If negative, that means the model is not very good
+
+*** Classification errors
+Good thing about classification is that there are only a certain kinds of errors, because the classification is either right or wrong, no need to worry about how close/far the predicted value is.
+
+- Use number of correct classifications as proportion to the total is the accuracy
+- Precision and recall depend on your priorities, for example may have more bias towards false positives in some cases like cancer.
+
+*** Evaluating performance of models
+
+
+*** Cross-validation
+- Cross validation uses validation data to tune model without looking at test data
+- Do many validation sets, eg 5-fold cross validation -> 5 sets with 1 different set as validation each time
+
+*** Common pitfalls
+
+** Lecture 10 - Data preparation
+Need some way to turn qualitative input features such as colours into numerical values.
+- Using enumeration causes implied simiarlity between features, eg red - 1, blue - 2 means distance between the two colours have a value
+
+** Lecture 11 - Basis Expansions
+*** Basis expansion
+- Define basis functions $h_{m}(X)$ on input $X$
+- Functions used to construct larger space of functions. 
+For example
+$h_{1}(X) = 1$, $h_{2}(X) = X$, $h_{3}(X) = X^{2}$
+forms the basis of any 2nd degree polynomial as a linear combination.
+- Instead of linear model $f(X) + \beta_{0} + \beta_{1}X$
+
+Ridge and lasso regression when using linear regression with different regularisation
+- Only need to optimise for one parameter (regularisation \lambda) rather than all \thetas
+- Lasso regression could reduce weights to 0
+
+** Lecture 12 - Bayesian classification
+- Histogram very crude and sensitive because if points lie on histogram boundaries then could be low/high
+probabilistic models are known as non-parametric models
+-> Do not need to fit an ideal model by training and finding parameters
+-> No need to train, but more time taken to process data
+
+** Lecture 13 - Maximal Margin Classifiers
+
+** Lecture 15 - Neural Networks part 1
+** Lecture 16 - Neural Networks part 2
+
+- Difficult to deal with "none of the above" classification especially if training does not include "none of the above" examples
+** Lecture 17 - Unsupervised learning part 1
+** Lecture 18 - Unsupervised learning part 2
+*** K means cluster
+- Find closest k points that are closest to $\mu$ data point
+- Issue with randomly putting centroids in bad positions makes them get stuck at local maxima
+- Repeat the algorithm many times for more random positions
+- Choose clustering with lowest cost
+
+Reduce dimensionality
+- Data compression for sending data across networks
+
+*** Principle Components Analysis (PCA)
+- Get improvements in computation time, but not accuracy
+- Finds lower dimensional surface to reduce dimensionality
 * CS4402 Constraint Programming
 ** Lecture 2
 *** Constraint Modelling
@@ -220,16 +338,171 @@ Savile row maps steps 3 and 4. *Constraint modelling* is to do with mapping from
 - Example solution, canonical element must be in ascending order
 
 Can use *occurence representation* as this representation does not introduce equivalence classes.
+Switches multiply by values
 
+**** Example
+Explicit:
+|    1 |    2 |    3 | ... |    n |
+| 0..9 | 0..9 | 0..9 | ... | 0..9 |
 
+Switches (occurence)
+|   1 |   2 |   3 | ... | n   |
+| 0,1 | 0,1 | 0,1 | ... | 0,1 |
 
+*Implied constraint* Add implied constraints explicitly even if other constraints already form it in the model to help the solver.
+
+** Lecture 4
+*** Multisets
+Like sets, but repetition is allowed
+- Have to be careful as domain can be unbounded due to infinite repetition
+
+*** Relation
+Cross product of set to get tuples which can be assigned true or false
+
+3d matrix for relation representation (A x B x C)
+- Not enough space to express more relations
+eg if there is (1,2,4) relation, cannot place (1,2,5) relation -> Therefore need 3 dimensions
+
+|   |       2 | 3 | 4 |
+| 1 | {4,5,6} |   |   |
+| 2 |         |   |   |
+| 3 |         |   |   |
+Values of A on the rows and B on the columns to express relation to values of C.
+
+*** Function
+Mapping set of inputs to outputs
+
+*Total functon* - everything is directly mapped
+
+Again use dummy value 0 for partial explicit injection. Not very messy, but not as nice as occurence relation.
+
+*Surjection* - All elements of codomain are used
+
+** Lecture 5 - Symmetry
+- Symmetry preserves solutions
+If there is a solution, symmetrical instances will also have solutions and vice versa.
+
+Use symmetry breaking constraints to remove symmetry from the problem, so we can prune the search tree
+
+Because of symmetry permutations, requires factorial number of constraints
+** Week 6 tutorial
+Q2)
+[0,0,1]
+[1,1,0]
+
+[0,1,1]
+[1,0,0]
+
+Q3)
+[0,1,1]
+[1,0,0]
+[1,0,0]
+
+[1,1,0]
+[0,0,1]
+[0,0,1]
+
+[0,0,1]
+[0,0,1]
+[1,1,0]
+
+[0,0,1]
+[0,0,1]
+[1,1,0]
+
+** Lecture 6
+*** Branching
 
 ** Practical 1 notes
 Part 3 mazes:
 - maze with one path but many steps
 - maze with many paths but few steps
+- see what happens with more steps than required for solution
+- 
 
- 
+Extension: Model the problem from a different viewpoint (different variables/solutions) and compare against given model
+
+
+** Lecture 11 - Search
+There are other methods of search that are nor systematic
+- does not guarantee going through entire space, but searches much faster
+
+*** Definitions
+d-way branching
+- a child node in the tree for each value in the domain
+
+2-way/binary branching
+- only ever have two branches
+- on left branch, make assignment of variable
+- on right branch, csp where domain doesn't have the left branch's assignment
+  - remove left assignment from domain rather than do another assignment
+
+- Removals from domains must be undone when coming back up from the search tree
+
+*** Methods
+
+*** AC3
+- Instead of having to do many full iterations like in AC1, only add new arc checks to the queue if a change in a domain affects other domains with connected arcs.
+- Fully connected structures are the pathological case because every domain has to be revised (added to the queue) every time, but still more efficient that always revising every single arc
+
+
+** Lecture 12
+*** Forward checking 2 way version (to implement for practical)
+#+BEGIN_SRC 
+var = selectVar(varList)
+val = selectVal(var.domain)
+#+END_SRC
+
+Both selection of variable from list and value chosen from domain can be chosen using some heuristics
+
+**** Left branch
+#+BEGIN_SRC 
+reviseFutureArcs(varList, var)
+#+END_SRC
+reviseFutureArcs can do some pruning, so it must be undone if the branch returns without successful complete assignment
+
+
+**** Right branch
+Still have to reviseFutureArcs even after deleting the value from the domain
+- Because deletion could cause issues with other arcs (consistency)
+
+**** Implement basic backtracking
+Can implement basic backtracking in addition to forward checking/pruning
+- Use to check that answers are correct
+- Use for empirical testing to compare the two methods
+
+**** Implement different heuristics
+- Different heuristics (simple/complex) can be implemented and compared for practical
+
+
+*** Heuristics
+**** Static variable heuristics
+
+**** Dynamic heuristics
+Heuristics that change based on the current state
+- Eg, smallest-domain as it changes based on removed/assigned values in variable domain
+
+
+
+** Lecture 13 - Beyond AC3
+*** MAC (Maintaining Arc Consistency)
+- Make sure arc remains consistent after every assignment
+- The arcs in the queue for this is the same as in forward checking
+- Because only the arcs in forward checking are the ones that could have been changed that need to be revised
+
+AC3 can add arcs to the queue that are not going to do anything
+- Two ways of solving this
+
+*** AC4 Fine grained
+- Keep a counter for number of supports for each arc pair 
+- More information stored in counters to avoid putting things in queue
+- Delete is counter reaches 0 (no supports)
+
+Trade off of AC3 vs AC4
+- AC4 is space trade off for time, requires more memory for counters and dictionaries
+
+*** Looking forward vs looking back
+
 * CS4204 Concurrency
 ** Lecture 1
 *** Books
@@ -250,7 +523,6 @@ Part 3 mazes:
 - It is possible for a concurrent program to run on a single core but not the other way around
 - 
 
-
 ** Lecture 2
 *** Tuple
 (1,"a", 1.2)
@@ -268,7 +540,6 @@ Part 3 mazes:
 [] :: [t] -- empty list
 #+END_SRC
  
-
 ** Lecture 3 Basic parallel haskell constructs
 *** Concurrency vs parallelism
 Concurrency is the illusion that tasks are happening at the same time
@@ -309,3 +580,123 @@ How big or small something is.
 Evaluate and die
 - No need to spark new threads if not enough hardware
 - Shared spark pool leads to single point of contention
+** Lecture 4 Locks and lock-free
+*** System model - shared memory
+*Memory hierarchy*
+- Software threads, scheduled by the OS
+- Processing unit, hardware thread of execution
+- Physical resources shared through hyperthreading
+- Chips running the hardware threads accessing shared memory
+
+*Correctness* Must write to correct places in memory or things go wrong quickly!
+
+*** Locks
+Basic building block mechanism. 
+- ~compareAndSwap~ used to build more complicated locking mechanisms
+- Implemented in the assembly languages
+
+- Need for locks means there is somewhere in the program where there is contention
+- Perhaps better to reduce contention rather than having to worry about locks
+
+**** Issues
+- Busywait
+#+BEGIN_SRC 
+while(accquire_lock(lock)) {
+    //do things
+}
+#+END_SRC
+Process keeps looping try to get the lock when another process currently holds the lock
+- To improve, can loop around waiting without looping the test and set
+- Do not try to testAndSet until the lock is free, rather than trying even when it is held
+- Better because only need read access (can be shared among other threads)
+- All threads rush to accquire the lock once it is freed
+
+Use exponential back-off algorithms to prevent everyone trying to accquire at the same time
+- Bias towards most recent threads as they will have smaller #c# valuse
+
+Lock master as a 'scheduler' to choose first threads go enxt
+
+
+- If have to wait for a *very* long time, may want to put thread to sleep instead of letting it busy loop
+- Only worth if the cost of context switching is less than the waste computation of busy looping
+
+*** Queue-based locks - Smoother way of having threads accquire locks - No thundering herd as only the thread at the tail of the queue gets woken up 
+*** Lock-free algorithms
+- Allow recovery when threads who 'own' the lock die without releasing the lock
+
+** Lecture 5 Patterns and data parallelism
+*** Parallel patterns
+*Patterns can have different implementations*
+Eg map has a parallel pattern:
+Parallel map - spark for each element in the map
+Task farm - only as many parallel threads as there are parallel workers
+
+*** Data parallelism
+Apply parallelism to each element of data
+- regular structure
+- easy to reason about performance
+
+Data parallelism works well on GPUs because of fine-grain
+
+*** Task parallelism
+Parallelism from the control of the program rather than structure of the data.
+Eg, divide and conquer
+
+
+*** BSP
+- Synchronisation by barrier
+  - Wait until all exchange is done before any thread starts again
+  - Potentially very expensive is many cores are bloced waiting for the end of exchange
+
+- Easy to construct timing model for BSP
+  - Get time for each superstep and time for each exchange
+
+
+
+Threadscope for system usage visualisation
+ghc -eventlog
+./prog +RTS -ls -lf
+
+
+-feager-blackholing
+
+- Irregular computation means some cores may be idle/waiting, so not full usage
+
+** Lecture 6 - Task parallelism
+- Because task parallelism is less regular, harder to find patterns like data parallelism
+- Unfortunately not all problems in the real world are data parallel, so need to figure out how to parallelise by task
+
+*** Producer/consumer
+- Only works with streams of results
+- Otherwise it is just sequential
+
+
+*** Divide and conquer
+- Divide and conquer with threshold
+  > Below threshold do sequentially
+
+*** Task Farm
+Allocate all tasks to workers
+- can get on with the next task if one worker finishes early
+- better load balance as can choose number of workers to number of cores
+
+flag
+
+** Lecture 7 - Skeletons
+Skeleton - specific implementation of patterns of parallelism
+- Patterns are design time ideas (thoughts)
+- Skeletons are specific implementations of skeletons
+
+Should think of patterns and not skeletons, otherwise will be driven to using/sticking with skeleton rather than how the pattern should be applied
+
+** Lecture 8 - Evaluation strategies
+Laziness and parallelism go in opposite directions
+Laziness - Only evaluation when needed
+Parallelism - Evaluate before its needed
+
+Evaluation strategies are a way to fight the laziness
+
+~rdeepseq~ forces eager evaluation
+- Using different evaluation strategies gives more control, eg can use r0 to do no evaluation on the left side of a list and use rseq for evaluation on the right side
+
+Monad
