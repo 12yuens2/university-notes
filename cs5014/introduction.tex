@@ -2,7 +2,22 @@
 \begin{document}
 
 \section{Introduction}
+In machine learning, we wish to \textit{learn} the mapping between input and output without having to program it explicitly.
 
+\begin{displayquote}
+Maching learning is the field of study that gives computers the ability to learn without being explicitly programmed. - Arther Samuel.
+\end{displayquote}
+
+\begin{displayquote}
+A computer program is said to learn from exerience $E$ with respect to some task $T$ and some performance measure $P$, if its performance on $T$, as measured by $P$, improves with experience $E$.
+\end{displayquote}
+\noindent
+In general, most machine learning boils down to a simple prediction equation.
+\begin{align}
+  \^{Y} &= f(X, \theta)
+  Y &= f(X, \theta) + \varepsilon
+\end{align}
+where $f$ is a mathematical model for predicting $Y$ from $X$. $X$ is a list of input features that are used for prediction. They could be independent variables or some kind of predictor. $\^{Y}$ is the output of the predicting model which are the predicted values. $\theta$ are the model parameters that the model tries to learn and optimise for. Finally, $\varepsilon$ is the error, which represents the difference between predicted values and desired values. 
 
 \subsection{Supervised learning}
 
