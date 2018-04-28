@@ -313,6 +313,27 @@ Reduce dimensionality
 *** Principle Components Analysis (PCA)
 - Get improvements in computation time, but not accuracy
 - Finds lower dimensional surface to reduce dimensionality
+** Lecture 19 - Deep Learning basics and regularisation
+- Idea behind deep learning is to do learning as much as possible with little manual stages
+- End to end optimisation from data input and classification output
+
+*** Issues
+- How to decide topology of the network (number of layers/nodes)
+- Computation needed due to large data/hyperparameters
+- Complex cost function
+- Difficult to know what the problem is if the network doesn't work
+- Complex models lead to potentially more overfitting
+
+** Practical 2 notes
+
+Good accuracy because very different wavelengths for red and green
+- Show using two samples can still get good accuracy -> not overfitting because very few samples used and can still predict
+- Plot graph of wavelengths
+- Drop certain wavelengths to show better/worse accuracy
+
+Comparison of different methods when scaling up size of dataset
+- simpler methods gets same result so better to use simpler method for speed
+
 * CS4402 Constraint Programming
 ** Lecture 2
 *** Constraint Modelling
@@ -422,7 +443,11 @@ Part 3 mazes:
 
 Extension: Model the problem from a different viewpoint (different variables/solutions) and compare against given model
 
-
+** Practical 2 notes
+- Implement different value/variables heuristics
+- Still look at time for metrics
+- Heuristics may use less revisions/arcs, but use more time to calculate
+- Time taken for smaller problems more for heuristics, but tradeoff decreases if problem is really large
 ** Lecture 11 - Search
 There are other methods of search that are nor systematic
 - does not guarantee going through entire space, but searches much faster
@@ -444,7 +469,6 @@ d-way branching
 *** AC3
 - Instead of having to do many full iterations like in AC1, only add new arc checks to the queue if a change in a domain affects other domains with connected arcs.
 - Fully connected structures are the pathological case because every domain has to be revised (added to the queue) every time, but still more efficient that always revising every single arc
-
 
 ** Lecture 12
 *** Forward checking 2 way version (to implement for practical)
@@ -481,7 +505,6 @@ Can implement basic backtracking in addition to forward checking/pruning
 **** Dynamic heuristics
 Heuristics that change based on the current state
 - Eg, smallest-domain as it changes based on removed/assigned values in variable domain
-
 
 
 ** Lecture 13 - Beyond AC3
@@ -700,3 +723,57 @@ Evaluation strategies are a way to fight the laziness
 - Using different evaluation strategies gives more control, eg can use r0 to do no evaluation on the left side of a list and use rseq for evaluation on the right side
 
 Monad
+** Lecture 9 - Implementation and Tuning
+
+*** Haskell Implementation
+
+- one to one mapping between haskell thread to OS threads to reduce complexity with context switches
+- assuming all HECs are busy
+- otherwise not using all system resources efficiently
+
+**** Synchoronisation
+- Needed for exchanging information between HECs
+  - GC so we do not write over another HEC's heap
+  - Move sparks instead of cores because less context needed (threads also have cached memory as its been running)
+  - Have to rebuild context for thread
+  - Moving sparks also has to move the data that is needed for the spark to run
+  - Foreign function calls can deadlock if external call calls back to Haskell while it is waiting for the result (need to make the call asynchronously)
+
+*** Implementing skeletons using strategies
+
+*** Performance Tuning Principles
+
+**** Core affinity
+- Keeping threads on the same core
+
+Why not lock free
+- Double word exchange required, which is not supported on intel architectures
+** Lecture 10 - Shared Memory and Heteregenous Computing
+
+*** Memory management
+- There is a difference between a memory-managed language like Java and a manual memory managed language like C
+- In manual memory management, allocation and deallocation has to be done memory
+
+- If some other thread deallocates the memory and the same pointer gets re-allocated again
+- The pointer is now pointing to something else, but the error is not caught as the memory location is valid again
+- Another thread which previously had a reference to this pointer now thinks it is still the previous node when it is actually something else
+- Known as the ABA problem
+
+**** How to defend against ABA
+- Timestamp
+  - Associate timestamp during allocation
+  - Previously allocated pointer now sees different timestamp
+  - However, costs extra memory to store the timestamp, which eats into pointer memory because of limited size
+
+- Hardware support
+  - Not use compare and swap at hardware levle
+  - LL (load linked)
+  - SC (store conditional)
+
+
+*** Memory consistency
+Relaxed memory consistency varies based on hardware/architecture
+
+**** Sequential consistency
+- Allow threads to do things in any order
+- But 
