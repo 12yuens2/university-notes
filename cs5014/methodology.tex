@@ -1,0 +1,11 @@
+\documentclass[CS5104-Notes.tex]{subfiles}
+\begin{document}
+
+\section{Regularisation}
+When using too many features, it is often the case that overfitting happens where the model fits well to the training data, but does not generalise to unseen data. A typical way to deal with overfitting is to reduce the number of features, either manually or automatically. This is done because some input features may not be very relevant to the general problem, but still affect the prediction. 
+\n
+\textbf{Regularisation} is another method to reduce the effect of some input features without removing them completely. It works by keeping all input features, but using multipliers to reduce the scale of certain $\theta$ parameters. This allows more relevant features to have more impact while still keeping a lower effect of less relevant features. The parameters are penalised using a large multiplier to cause them to be minimised because of the increased constant. For example $... + 1000\theta_{3} + 1000\theta_{4}$. This changes the cost function by adding a regularisation parameter $\lambda$.
+\begin{equation}
+\text{Cost} = \frac{1}{2m}\bigg[\sum_{i=0}^{m}(h(x^{i}) - y^{i})^{2} + \lambda \sum_{j=1}^{n}\theta_{j} \bigg]
+\end{equation}
+\end{document}
