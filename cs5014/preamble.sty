@@ -12,6 +12,7 @@
 \usepackage{parskip}
 \usepackage{fancyhdr}
 \usepackage{vmargin}
+\usepackage{subcaption}
 %\usepackage[backend=biber]{biblatex}
 %\addbibresource{references.bib}
 
@@ -93,6 +94,24 @@
   tabsize=2,
   moredelim=**[is][\color{red}]{@}{@},
 }
+
+
+% Confusion matrix
+\usepackage{graphicx}
+\newcommand\MyBox[1]{%
+  \fbox{\parbox[c][1.7cm][c]{1.7cm}{\centering #1}}%
+}
+\newcommand\MyVBox[1]{%
+  \parbox[c][1.7cm][c]{1cm}{\centering\bfseries #1}%
+}  
+\newcommand\MyHBox[2][\dimexpr1.7cm+2\fboxsep\relax]{%
+  \parbox[c][1cm][c]{#1}{\centering\bfseries #2}%
+}  
+\newcommand\MyTBox[4]{%
+  \MyVBox{#1}\MyBox{#2}\hspace*{-\fboxrule}%
+  \MyBox{#3}\hspace*{-\fboxrule}%
+  \MyBox{#4}\par\vspace{-\fboxrule}
+}  
 
 \setlength{\grammarindent}{12em}
 
