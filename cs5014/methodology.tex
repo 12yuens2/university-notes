@@ -19,11 +19,30 @@ The regularisation parameter can also be added to the normal equation.
 	0 & 0 & 0 & 1
 \end{bmatrix}  \Bigg)^{-1}X^{T}y
 \end{equation}
-
+In general, regularisation can be thought of as adding an extra component to the equation of minimising the cost function.
+\begin{equation}
+J(\theta) = L(\theta) + R(\theta)
+\end{equation}
+where $J(\theta$ is the cost, $L(\theta)$ is the loss and $R(\theta)$ is the regularisation. Further, regularisation has a computational advantage over feature selection, as additional training and searching of models is not needed.
 \subsection{Ridge regression}
-
+The $\lambda \sum_{j=1}^{n}\theta_{j}$ term for regularisation can be calculated using the $l_{2}$ norm, usually denoted as $||\theta||_{2}^{2}$. The $l_{2}$ norm is the euclidean norm, which is a sum of squares of all elements, defined as:
+\begin{equation}
+||\theta||_{2} = \sqrt{\sum_{j=1}^{n}\theta_{j}^2}
+\end{equation}
+It measures the distance of $\theta$ from zero. As $\lambda$ increases, the $l_{2}$ norm will \textit{always} decrease. The reason regularisation has an advantage of a simple least squares regression is based on the \textbf{bias-variance trade-off}. As $\lambda$ increases, the flexibility of the model decreases, leading to decreased variance, but increased bias. For some values of $\lambda$ up to a limit, the variance will decrease rapidly with only a small increase in bias, which reduces the overall mean squared error of the model. 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth, keepaspectratio]{imgs/ridge-regression.png}
+\caption{Plot showing why ridge regression leads to lower MSE for some values of $\lambda$. Squared bias (black), variance (green) and test MSE (purple) for the ridge regression predictions on a simulated dataset as a function of $\lambda$. Taken from \textit{An Introduction to Statistical Learning}.}
+\end{figure}
 \subsection{Lasso regression}
-
+The disadvantage of ridge regression is that while it will shrink all coefficients towards zero, it will not set them to be exactly zero unless $\lambda = \infty$. In other words, for datasets with a large number of features, increasing $lambda$ will reduce their effect but not exclude any of them completely.
+\n
+Lasso regression works the same way as ridge regression, except instead of using the $l_{2}$ norm, the $l_{1}$ norm is used. Rather than being a sum of squares, the $l_{1}$ norm is simply a sum of all elements.
+\begin{equation}
+||\theta||_{1} = \sum_{j=1}^{n}|\theta_{j}|
+\end{equation}
+Lasso regression also shrinks the coefficient estimates towards zero. However, the $l_{1}$ penalty is able to force some coefficient estimates to be equal to zero when the $lambda$ value is large enough. In this sense, lasso regression performs variable selection like selecting the best features. It can be said that lasso regression yields \textit{sparse} models because the models may only involve a smaller subset of features. 
 \section{Evaluation}
 The goal of supervised machine learning is to train the models on known data in order to predict new data. To be able to evaluate how well the model works on new data, any given data has to be split into separate training and test data sets. The testing data is used as a final step after training models to evaluate how well they perform. Testing data should \textit{never} be used to train, as otherwise this would bias the model heavily towards the testing data, rather than towards general unseen data. Further, testing data should not be used for any step of the machine learning process except for checking the performance of trained models at the very end. 
 \subsection{Source of errors}
