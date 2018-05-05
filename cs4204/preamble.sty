@@ -12,13 +12,11 @@
 \usepackage{parskip}
 \usepackage{fancyhdr}
 \usepackage{vmargin}
+\usepackage{subcaption}
 %\usepackage[backend=biber]{biblatex}
 %\addbibresource{references.bib}
 
 
-\definecolor{dkgreen}{rgb}{0,0.6,0}
-\definecolor{gray}{rgb}{0.5,0.5,0.5}
-\definecolor{mauve}{rgb}{0.58,0,0.82}
 
 % Subfiles individual compilation
 \usepackage{subfiles}
@@ -74,26 +72,38 @@
 % Listings
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
+\usepackage{alltt}
+\usepackage{upquote}
+\usepackage{textcomp}
+
+\lstset{escapeinside={<@}{@>}}
+\def\textquoteback{\`{}}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
 
 \lstset{frame=tb,
-  numbers=left,
-  stepnumber=1,
-  language=Java,
+  language=Haskell,
+  keywords=[2]{`par`},
+  keywords=[3]{`pseq`},
+  keywordstyle=[2]{\color{red!80!black}},
+  keywordstyle=[3]{\color{red!80!black}},
   aboveskip=3mm,
   belowskip=3mm,
   showstringspaces=false,
   columns=flexible,
   basicstyle={\small\ttfamily},
+  numbers=left,
   numberstyle=\color{gray},
   keywordstyle=\color{blue},
   commentstyle=\color{dkgreen},
   stringstyle=\color{mauve},
   breaklines=true,
   breakatwhitespace=true,
-  tabsize=2,
-  moredelim=**[is][\color{red}]{@}{@},
+  upquote=true,
+  tabsize=4
 }
-
 \setlength{\grammarindent}{12em}
 
 %\renewcommand{\lstlistingname}{Algorithm}
