@@ -56,7 +56,7 @@ where $N$ is the number of processors available and $p$ is the amount of time sp
 \end{figure}
 \noindent
 The graph in figure \ref{fig:amdals-law} shows that to achieve a high speedup, only a tiny percentage of the total execution time can be sequential. This means the need for sequential operations heavily dominates computation time, and a lot of parallelism is needed to get any good speedup. 
-\section{Parallel Haskell}
+\subsection{Parallel Haskell}
 Writing explicit parallel programs is very difficult as there are many things that have to be specified by the programmer, most notably:
 \begin{itemize}
 \item Task identification
@@ -75,7 +75,7 @@ A purely functional language like Haskell has several advantages when it comes t
 \item No deadlocks - data and control dependencies in the functional language ensures that there can be no unresolved mutual dependencies between tasks.
 \end{itemize}
 
-\subsection{The \texttt{par} and \texttt{pseq} annotation}
+\subsubsection{The \texttt{par} and \texttt{pseq} annotation}
 The primitive, higher-order function \texttt{par} is used by the programmer to mark a sub-expression as being suitable for parallel evaluation. It is the basic way to introduce parallelism in GpH.
 \begin{lstlisting}[caption={Example of the \texttt{par} annotation.}]
 -- Create a spark for a and return the value of b
@@ -94,8 +94,7 @@ x `pseq` f x where x = ...
 The \texttt{par} annotation is an example of the programmer exposing parallelism to the compiler without explicitly forking threads with concurrent methods. The expression \texttt{a `par` b} \textit{sparks} the evaluation of \texttt{x} and returns \texttt{y}. Sparks are queued for execution in FIFO order, but are not executed immediately. The runtime system determines if the spark is converted into a real thread when it detects an idle CPU. This way the parallelism is spread among real CPUs but it is not a mandatory scheme. 
 \n
 While \texttt{par} creates new sparks, \texttt{pseq} and \texttt{seq} ensures sequential evaluation. The two are almost equivalent, the difference being that \texttt{seq} can evaluate its arguments in either order, but \texttt{pseq} must evaluate the first argument before the second, allowing the programmer to control evaluation order in conjunction with sparking with \texttt{par}.
-\lstset{escapeinside={<@}{@>}}
-\def\textquoteback{\`{}}
+
 \begin{lstlisting}[caption={Parallel Fibonacci}]
 import Control.Parallel
 
@@ -109,7 +108,7 @@ pfib n
 \end{lstlisting}
 \texttt{par} is used to spark a thread to evaluate \texttt{n1} and \texttt{pseq} is used to foce the parent thread to evaluate \texttt{n2} before adding the two sub-expressions back together. When using \texttt{par}, the general rule of thumb is that the sparked computation should be required at a later time, but not too soon. The sparked computation should not be too small, otherwise the cost of forking it in parallel will be too large relative to the amount of parallelism gained. The runtime system decides on issues such as when and where threads are created and the communication between threads. Most notably, it determined whether a thread is created or not. This parallelism model is therefore called \textbf{semi-explicit} as the programmer only marks which areas can be parallelised, and the runtime system decides whether to execute the sparks in parallel based on information during execution such as the system load and processors available. This approach eliminates the complications of low-level parallelism, leaving responsibility of these issues to the runtime system. 
 
-\subsection{Sparks}
+\subsubsection{Sparks}
 GpH uses an \textbf{evaluate-and-die} mechanism where sparks that are not converted during runtime are simply not run at all. This is especially true in cases where the sparks contain little computation which finishes in the parent thread before the spark has a chance to be converted. This way, there is no need to spark new threads if there is not enough hardware but does have an issue of the shared spark pool being a single point of contention. 
 \n
 Haskell programs typically have one main thread for root computation. Programs may be forked as \textbf{Haskell Execution Contexts} (HEC) which are larger, more heavyweight evaluation engines, often implemented using operating system threads. Each HEC maintains pools of lightweight sparks and threads. \textbf{Sparks} are runtime head objects that have been marked for \textit{possible} parallel evaluation and are held in a spark pool. 
