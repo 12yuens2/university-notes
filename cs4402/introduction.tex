@@ -39,7 +39,13 @@ The modelled CSP is used as input to a constraint solver, which produces one or 
 \begin{equation}
 \text{COP} = \text{CSP} + \text{an objective function}
 \end{equation}
-The constraint optimisation problem adds an \textbf{objective function} to a normal CSP. The goal is then to maximise or minimise the objective function. The goal is then to find a solution where all constraints are satisfied \textit{and} the objective is optimised. Examples of these problems include minimising time taken in scheduling problems, or maximising profit. 
+The constraint optimisation problem adds an \textbf{objective function} to a normal CSP. The goal is then to maximise or minimise the objective function. The goal is then to find a solution where all constraints are satisfied \textit{and} the objective is optimised. Examples of these problems include minimising time taken in scheduling problems, or maximising profit. This gives four components to the constraint problem.
+\begin{enumerate}
+\item \textbf{Given} parameters
+\item \textbf{Find} decision variables
+\item \textbf{Such that} constraints
+\item \textbf{Min/Maximising} objective
+\end{enumerate}
 
 \subsection{Problem classes}
 A problem class describes a family of problems, related by a common set of \textbf{parameters}. Examples of a problem class is the n-queens problem class, or sudoku problem class. The parameters are the same as each problem instance in the class has the same rules. 
@@ -86,4 +92,8 @@ In a constraint language, decision variables and their domains must be declared.
 \item Equality, disequality, inequality
 \item Operators to build constraint expressions, for example +, -, AND, OR etc. These constraint expressions are then represented intensionally. 
 \end{itemize}
+The model written in constraint languages can be parameterised to represent a problem class. This is done by giving values for the parameters to obtain an instance which corresponds directly to a CSP/COP. The CSP/COP can then be passed to a constraint solver to get the solution to that instance.
+
+\subsection{Crystal maze example}
+
 \end{document}
