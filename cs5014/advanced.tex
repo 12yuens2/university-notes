@@ -3,4 +3,48 @@
 
 \section{Basis expansion}
 
+\subsection{Polynomial regression}
+To extend linear regression to settings where the function is non-linear, basis functions are used to construct a larger space of functions. A basis function (or number of basis functions) are defined on the input $X$. For example
+\begin{equation}
+h_{1}(X) = 1, h_{2}(X) = X, h_{3}(X) = X^{2}
+\end{equation}
+forms three basis functions which is used to transform the input. This transformation replaces the standard linear model
+\begin{equation}
+f(X) = \theta_{0} + \theta_{1}X
+\end{equation}
+with new inputs
+\begin{equation}
+[h_{1}(X), h_{2}(X), h_{3}(X)]^{T} \rightarrow [1,X,X^{2}]^{T}
+\end{equation}
+to get a polynomial function
+\begin{align}
+f(X) &= \theta_{0}h_{1}(X) + \theta_{1}h_{2}(X) + \theta_{2}h_{3}(X) \\
+ &= \theta_{0} + \theta_{1}X + \theta_{2}X^{2}
+\end{align}
+Now the same linear regression can be run on the new input as the output is a linear combination of functions, which a linear regression model can still be applied on. The functions may be non-linear, but the input space has been transformed through the non-linear mapping. Of course, this can naturally be extended to $m$ polynomials, but generally using more than 3 or 4 polynomials leads to high chances of overfitting.
+
+\subsection{Piecewise linear regression}
+Basis expansions are in fact more general than polynomial expansion. Basis functions can also be defined to create a piecewise linear regression model. 
+
+\subsection{Regression splines}
+
+\section{Bayesian classification}
+In Bayesian terms, input variables are called \textbf{evidence}. The Bayes rule allows the probability and evidence to be expressed into simpler distributions:
+\begin{equation}
+P(C_{i} | X) = \frac{P(X|C_{i}) P(C_{i})}{P(X)}
+\end{equation}
+where 
+\begin{itemize}
+\item $P(C_{i} | X)$ is the \textbf{posterior probability}. In other words, if we know $X$ happened, how likely is $C$?
+\item $P(X|C_{i})$ is the \textbf{likelihood}. If we know that the right answer is $C$, how likely is observation $X$?
+\item $P(C_{i})$ is the \textbf{prior}, which is how often $C_{i}$ is the correct answer in total. This can often be measured or estimated.
+\item $P(X)$ is the \textbf{probability of evidence}, which is how often this particular observation is obtained.
+\end{itemize}
+Many classifiers attempt to calculate the posterior directly, for example logistic regression. The underlying assumption is that the priors will not change. 
+\subsection{Maximum likelihood classifier}
+The maximum likelihood classifier picks the class most likely to generate X. It only makes sense when the classes are approximately equally likely.
+\begin{equation}
+\hat{Y} = \text{argmax}_{c}P(X|C)
+\end{equation}
+
 \end{document}
