@@ -777,3 +777,15 @@ Relaxed memory consistency varies based on hardware/architecture
 **** Sequential consistency
 - Allow threads to do things in any order
 - But 
+
+
+
+
+
+* Revisions Qs
+
+** Constraint
+- Wk1L2 Intensional representations (don't understand what they are)
+
+
+** Concurrency
