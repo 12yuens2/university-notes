@@ -273,5 +273,268 @@ To ensure that the multiset of $S$ is finite, we must bound either the total num
 In the occurrence representation of multisets, instead of using 0 or 1 as values in the array, the array is extended to allow multiple occurrences.
 
 \subsection{Relations}
-Relations are an assignment of truth values to tuples of values. For example, in the set $P = \{\text{Bill}, \text{Bert}, \text{Tom}\}$, a binary relation \textit{like} can be defined between two people from the set $P$. We might assign the tuple $<$Bill, Bert$>$ and $<$Bert, Tom$>$ to be true and false for all other combinations.
+Relations are an assignment of truth values to tuples of values. For example, in the set $P = \{\text{Bill}, \text{Bert}, \text{Tom}\}$, a binary relation \textit{like} can be defined between two people from the set $P$. The cross product $P \times P$ can be used to get all tuples of the set $P$. We might assign the tuple $<$Bill, Bert$>$ and $<$Bert, Tom$>$ to be true and false for all other combinations. To visualise an occurrence representation of a relation $R$ between two sets, a table can be created.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.4\textwidth, keepaspectratio]{imgs/relation-occurrence.png}
+\caption{Occurrence relation between two sets $A = \{1,2,3\}$ and $B = \{2,3,4\}$}
+\end{figure}
+\noindent
+
+\subsubsection{Projection}
+A common operation on relations in a projection. A relation can be projected onto one or more of its arguments, which results in a relation of reduced arity (less arguments/operands). For example in the set $P = \{\text{Bill}, \text{Bert}, \text{Tom}\}$ with the relation \textit{likes} on $P \times P = \{<\text{Bill, Bert}>, <\text{Bert, Tom}>, <\text{Bert, Bill}>\}$, the projection of \textit{likes} onto Bert gives $\{\text{Tom, Bill}\}$.
+
+\subsubsection{Other representations}
+From simple binary relations, relations can be extended to k-ary relations. This is best thought of using a k-dimensional matrix. For exmaple in the ternary case of $A \times B \times C$, we can introduce a 3D matrix indexed by elements of $A$ and $B$ and the size of $C$.
+
+\subsection{Functions}
+A function $f$ is a binary relation on two sets: a domain and a \textbf{codomain} (aka range). It has the property that each element of the domain is related to at most one element of the range which can be written as $f(x) = y$ to mean that the image of $x$ under the function $f$ is $y$.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.3\textwidth, keepaspectratio]{imgs/function.png}
+\end{figure}
+\noindent
+In a \textbf{total} function, every element of the domain has an image in the codomain while in a \textbf{partial} function, some elements have no image in the codomain. For an explicit representation of partial functions, dummy elements have to be introduced, preferrably outside of the range of codomain values to avoid equivalence classes.
+
+\subsubsection{Injections}
+The images of two distinct elements of the domain under an \textbf{injective} function are distinct. In other words, no two domain values map to the same codomain value. An \texttt{AllDifferent} constraint will need to be added for these cases.
+\n
+A \textbf{partial injection} is more complicated as not all domain values have to be mapped, but mapped values must be distinct.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.3\textwidth, keepaspectratio]{imgs/partial-injective-function.png}
+\caption{Domain and codomain mapping for partial injective functions.}
+\end{figure}
+\noindent
+Using an explicit model is messier here, but the occurrence representation is easy as we need the constraint that the sum of each row and col are both $\leq 1$.
+\n
+Furthermore, there are \textbf{surjective} functions, where every element of the codomain must be mapped to some element of the domain and \textbf{bijections}, which is both an injection and surjection. 
+
+
+\subsection{Nested structures}
+Though we have explored many methods to model combinatorial objects, problems often require us to find one combinatorial objected nested inside another, for example a set of sets or a sequence of functions.
+
+\subsubsection{The Gripper Problem}
+In the gripper problem, the robot must move the 4 balls from room A to room B. The goal is to have all balls in room B and the robot has three actions: pick up, put down and move.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth, keepaspectratio]{imgs/gripper-problem.png}
+\end{figure}
+\noindent
+Since the robot has two hands, it can pick up or put down two balls in a single step. However, when he moves, he can't pick up or put down balls when he is moving. Hence there are at most 2 actions per step. Naturally, this is characterised as a \textbf{sequence of sets} with a maximum cardinality of 2.
+
+\subsubsection{Nesting inside sequences}
+Recall how fixed-length sequences of size $n$ can be represented as an array of decision variables indexed from $1..n$ where the domains are the objects to be found.
+\begin{table}[H]
+\centering
+\begin{tabular}{| c | c | c | c | c | c |}
+\hline
+\textbf{0} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{...} & \textbf{n} \\
+\hline
+0..9 & 0..9 & 0..9 & 0..9 & ...& 0..9 \\ 
+\hline
+\end{tabular}
+\end{table}
+In the case of nested sequences, we can no longer use a single variable at each index to represent the object at that position because one variable is not enough to represent our set, function or relation. A simple solution is to extend the dimension of the array. By having more dimensions, we can now have a column of variables for each index to represent the nested structure.
+
+\subsubsection{Nesting inside sets}
+Nested structures inside sets is being asked to find a set of some other object. Both the model of the outer type and model of the inner type (explicit/occurence) must be specified here, unlike in the case of nested sequences, where only one type was needed.
+\n
+Consider the following problem class:
+\begin{itemize}
+\item Given $m, n$
+\item Find a cardinality-$m$ set of sets of $n$ digits such that ...
+\item There are three possibilities for models:
+  \begin{enumerate}
+  \item An occurrence representation
+  \item Outer: Explicit. Inner: Occurrence
+  \item Outer: Explicit. Inner: Explicit
+  \end{enumerate}
+\end{itemize}
+\textbf{Nested sets: occurrence representation} \\
+It is not feasible to introduce an occurence array indexed by the possible set of $n$ digits as this is not scalable. The size of the array would need to encompasss every possible set of size $n$ digits which would be too large.
+\begin{table}[H]
+\centering
+\begin{tabular}{| c | c | c | c |}
+\hline
+\textbf{\{1, 2, 3\}} & \textbf{\{1, 2, 4\}} & \textbf{\{1, 2, 5\}} & ... \\
+\hline
+0,1 & 0,1 & 0,1 & ... \\ 
+\hline
+\end{tabular}
+\end{table}
+Because of this, nested outer layers are typically represented explicitly.
+\n
+\textbf{Nested sets: Outer explicit} \\
+To express the outer layer explicitly, the dimension of the explicit array can be extended according to the representation chosen from the inner set. Of course, we have to be careful to make sure the elements of the outer set are distinct.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.45\textwidth}
+\centering
+\begin{tabular}{| c | c | c | c | c |}
+  \hline
+  \textbf{EO} & \textbf{1} & \textbf{2} & \textbf{...} & \textbf{m} \\
+  \hline
+  \textbf{0} & 0,1 & 0,1 &  & 0,1 \\
+  \hline
+  \textbf{1} & 0,1 & 0,1 &  & 0,1 \\
+  \hline
+  \textbf{...} & & & & \\
+  \hline
+  \textbf{9} & 0,1 & 0,1 &  & 0,1 \\
+  \hline
+\end{tabular}
+\caption{Occurrence representation of inner set}
+\end{subfigure}
+%
+\begin{subfigure}{0.45\textwidth}
+\centering
+\begin{tabular}{| c | c | c | c | c |}
+  \hline
+  \textbf{EE} & \textbf{1} & \textbf{2} & \textbf{...} & \textbf{m} \\
+  \hline
+  \textbf{1} & 0..9 & 0..9 &  & 0..9 \\
+  \hline
+  \textbf{2} & 0..9 & 0..9 &  & 0..9 \\
+  \hline
+  \textbf{...} & & & & \\
+  \hline
+  \textbf{n} & 0..9 & 0..9 &  & 0..9 \\
+  \hline
+\end{tabular}
+\caption{Explicit representation of inner set}
+\end{subfigure}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.45\textwidth}
+\begin{lstlisting}[caption={Constraints for occurrence representation of inner set}]
+Forall i in 1..m . 
+  sum(col i of EO) = n
+
+Forall i in 1..m-1 .
+  col i of EO < col i+1 of EO
+\end{lstlisting}
+\end{subfigure}
+\hspace*{\fill}
+\begin{subfigure}{0.45\textwidth}
+\begin{lstlisting}[caption={Constraints for occurrence representation of inner set}]
+  AllDiff on each column
+    
+  Forall i in 1..m-1 .
+    col i of EE < col i+1 of EE
+\end{lstlisting}
+\end{subfigure}
+\end{figure}
+
+\subsubsection{Relations as sets of tuples}
+Previously, we viewed relations as an assignment of truth values to tuples of values. This can be represented as a set of tuples.
+
+\subsection{Symmetry}
+The concept of symmetry is a \textbf{structure-preserving transformation} which can be characterised as a bijection on assignments (i.e. a one-to-one mapping). Complete assignments are partitioned into equivalence classes where all members in every class is either a solution or no member is a solution. In other words, symmetry preserves solutions. If there is a solution, symmetrical instances will also have solutions and vice versa.
+\n
+In constraint programming, we do not want to deal with symmetries as it can lead to a lot of wasted effort for systematic search. There are two common special cases of symmetry:
+\begin{enumerate}
+\item Variable symmetry - where the bijection can be characterised in terms of variables alone
+\item Value symmetry - where the bijection can be characterised in terms of values alone
+\end{enumerate}
+
+\subsubsection{Variable symmetry}
+Variable symmetry can be expressed in terms of a bijection on the variables. For example in the 4-queens problem, the board can be flipped horizontally, which leads to another valid and symmetrical solution.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth, keepaspectratio]{imgs/4-queens-symmetry.png}
+  \caption{Two symmetrical solutions to the four queens problem.}
+\end{figure}
+\begin{itemize}
+\item q1 $\rightarrow$ q4
+\item q2 $\rightarrow$ q3
+\item q3 $\rightarrow$ q2
+\item q4 $\rightarrow$ q1
+\end{itemize}
+A bijection of values would capture the transformation of this particular solution - but not the general horizontal flip. Equivalently, a symmetrical non-valid solution is still non-valid.
+
+\subsubsection{Value symmetry}
+In value symmetry, the values assigned to variables can be permuted to give a symmetrical solution. An example of this is the graph colouring problem.
+\begin{figure}[H]
+\begin{subfigure}{0.42\textwidth}
+  \includegraphics[width=1\textwidth, keepaspectratio]{imgs/map-colouring1.png}
+  \caption{Solution to graph colouring problem with map of Scotland.}
+\end{subfigure}
+\hspace*{\fill}
+\begin{subfigure}{0.42\textwidth}
+  \includegraphics[width=1\textwidth, keepaspectratio]{imgs/map-colouring2.png}
+  \caption{Symmetrical solution by permuting the value of the colours.}
+\end{subfigure}
+\label{fig:graph-colouring}
+\end{figure}
+\noindent
+A symmetrical solution can be reached as shown in figure \ref{fig:graph-colouring} by permuting the colours as follows:
+\begin{itemize}
+\item red $\rightarrow$ green
+\item green $\rightarrow$ blue
+\item blue $\rightarrow$ red
+\end{itemize}
+
+\subsubsection{Consequences of symmetry}
+Assuming that an explored subtree contained no solutions, symmetries in the model can map this fruitless subtree into another. If the symmetry is not dealt with, a systematic search will explore all symmetric variants of this subtree. It is important to remember symmetrical non-solutions are also non-solutions, and this is much more common than symmetrical solutions.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.4\textwidth, keepaspectratio]{imgs/symmetrical-subtree.png}
+  \caption{Symmetrical subtrees can map to another subtree later in the search.}
+\end{figure}
+
+\subsubsection{Symmetry-breaking constraints}
+Knowing how symmetry is introduced during modelling can make some symmetry detection easy. There are two reasons that symmetry enters into a constraint model:
+\begin{enumerate}
+\item It is inherent in the problem by nature, for example in the n-queens problem as the solution is a square
+\item It is introduced during the modelling process, especially for explicit representations.
+\end{enumerate}
+Adding constraints can affect the symmetry, for example by disallowing some elements of an equivalence class of assignments. This is typically done by defining an ordering of elements. Ordering the elements distinguishes one element in each equivalence clas of assignments. If the symmetry-breaking constraint is effectively propagated, the search tree can be pruned drastically. Valid symmetry-breaking constraints leave at least one element in each equivalence class of assignments, so they throw away solutions to the original problem. This is fine as we can recover those solutions by applying the symmetry to the solutions allowed. Moreover, if enough symmetry-breaking constraints are added, \textit{all} symmetry can be broken.
+\n
+Typically, symmetry-breaking constraints are formulated by defining a canonical solution and adding constraints to choose it. In other words an ordering on variables and an order on solutions is needed.
+
+\subsubsection{Lex-leader method}
+To define an ordering, it is often best to use a \textbf{lexicographic} ordering, for example
+\begin{equation}
+\{a, b, c, d\} \leq_{\text{lex}} \{b, d, c, a\}
+\end{equation}
+The lex-leader method is a way of applying lexicographic ordering to break all symmetry at the cost of a large number of constraints needed. It does so in two simple steps:
+\begin{enumerate}
+\item Choose an ordering on the variables
+\item Add one lexicographic orderin constraint per symmetry
+\end{enumerate}
+Although a huge number of constraints might be needed, sometimes the lex constraints collapse into simpler forms (like in the explicit set representation). The compromise is to only use a subset of the lex-leader constraints. For example, given the array
+\begin{table}[H]
+\centering
+\begin{tabular}{| c | c | c |}
+  \hline
+  A & B & C \\
+  \hline
+  D & E & F \\
+  \hline
+\end{tabular}
+\end{table}
+with row and column symmetry, an ordering on variables ABCDEF can be chosen. With the lex-leader method, the following constraints have to be defined for the various types of symmetry that exist.
+\begin{itemize}
+\item ABCDEF $\leq_{\text{lex}}$ DEFABC - Swapping rows
+\item ABCDEF $\leq_{\text{lex}}$ ACBDFE - Swapping last two columns
+\item ABCDEF $\leq_{\text{lex}}$ DFEACB - Swapping rows and last 2 columns
+\item ...
+\end{itemize}
+This prevents it from being possible to obtain a ``smaller'' assignment that the one currently defined by applying symmetry. Depending on the problem, this could require a factorial number of constraints, which is too many and unscalable. This is where the $\text{Lex}^{2}$ ordering comes in.
+
+\subsubsection{$\text{Lex}^{2}$ ordering}
+A significant fraction of the lex-leader constraints for row/column symmetry can be represented by lex ordering only the rows and columns.
+
+\subsection{Viewpoints}
+The fundamental formulation to any constraint model is the selection of a viewpoint. A viewpoint is defined as a set of decision variables and domains sufficient to characterise the problem. The rest of the model and constraints follows from this choice of variables and domains.
+\n
+Selecting a good viewpoint is essential to constraint modelling as a wrong choice can be writing the constraints very awkward, which likely leads to poor solver behaviour. Additionally, a good viewpoints makes expressing some of the constraints easier, but maybe not all constraints, so one viewpoint can be saved and auxiliary variables used to express the remaining constraints.
+
+\subsubsection{Auxiliary variables}
+Each variable in a CSP represents a choice that must be made to solve the problem being modelled. 
 \end{document}
+
