@@ -535,6 +535,46 @@ The fundamental formulation to any constraint model is the selection of a viewpo
 Selecting a good viewpoint is essential to constraint modelling as a wrong choice can be writing the constraints very awkward, which likely leads to poor solver behaviour. Additionally, a good viewpoints makes expressing some of the constraints easier, but maybe not all constraints, so one viewpoint can be saved and auxiliary variables used to express the remaining constraints.
 
 \subsubsection{Auxiliary variables}
-Each variable in a CSP represents a choice that must be made to solve the problem being modelled. 
+Each variable in a CSP represents a choice that must be made to solve the problem being modelled. Because the original viewpoint is sufficient to represent all choices in the original problem, these \textbf{auxiliary variables} are extra in the sense that they are not needed to characterise the problem. In other words, the axuiliary variables are separate from the viewpoint that express constraints not in terms of the variables in the viewpoint.
+\n
+As the choices that the auxiliary variables represent must also be represented by the original viewpoint, we must ensure that the two sets of variables are consistent by introducing \textbf{channelling constraints}.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{imgs/channelling-constraints.png}
+\caption{Auxiliary variables connected with channelling constraints to the original viewpoint.}
+\end{figure}
+\noindent
+Sometimes it is useful to formulate a model with 2 or more viewpoints to more easily express certain constraints. To add channelling constraints to link the auxiliary variables and original viewpoint, often a variable in one viewpoint has to be mapped or related in some way to the variables in the other viewpoint. Sometimes, extensional constraints work better here than intensional constraints.
+
+\subsection{Branching variables}
+Given a viewpoint and axuiliary variables, it is usually not necessary to assign all the variables to get a solution, as they may be redundant. The subset of the variable we choose to search over are the \textbf{branching} variables. It must be ensured that assigning the selected branching variables is sufficient to produce a solution. This is a choice that is made, especially when there are two viewpoints. The criteria for choosing which variables is to try and maximise constraint propagation.
+
+\subsection{Implied constraints}
+Implied constraints are logical consequences of the initial specification problem, when there is a chain of reasoning that leads to a deduction of implied constraints from the initial constraints. It is important to note that in theory, if constraint propagation was powerful enough, the solver would be able to see all these logical consequences, however, this is not the case in practice.
+\n
+The constraints programmer must add implied constraints explicitly, to help reduce the amount of search needed in the solver. This needs to be done by hand because the generation of implied constraints involves complex reasoning steps which are difficult to automate. Further, programmers have to learn to do this by experience, as it is often the case implied constraints are missed because it logically does not need to be written explicitly.
+\n
+There is a difference here between implied constraints and \textbf{redundant} constraints. The latter is also implied by the initial problem specification, but does not reduce search. These constraints should be avoided when possible as they add overhead to the solver and slow down the solving process.
+\n
+Finally, symmetry-breaking constraints are \textit{not} implied, as the CSP obtained by breaking-symmetry is not equivalent to the original problem in that it has a different set of solutions. In fact, when we break symmetry, there are new implied constraints that can be inferred. Often, the most powerful implied constraints are derived from symmetry-breaking, because more information can be inferred about the problem and therefore a stronger implied constraint can be written. For example, in the \texttt{AllDifferent} constraint on the explicit representation of sets
+\begin{table}[H]
+\centering
+\begin{tabular}{| c | c | c | c | c |}
+  \hline
+  \textbf{1} & \textbf{2} & \textbf{3} & ... & \textbf{n} \\
+  \hline
+  0..9 & 0..9 & 0..9 & ... & 0..9 \\
+  \hline
+\end{tabular}
+\end{table}
+the symmetry-breaking constraint
+\begin{equation*}
+  E[1] \leq  E[2] \leq E[3] \leq ... \leq E[n]
+\end{equation*}
+introduces a new implied constraint
+\begin{equation*}
+E[1] < E[2] < E[3] < ... < E[n]
+\end{equation*}
+making the original \texttt{AllDifferent} constraint redundant. 
 \end{document}
 
