@@ -786,6 +786,9 @@ Relaxed memory consistency varies based on hardware/architecture
 
 ** Constraint
 - Wk1L2 Intensional representations (don't understand what they are)
-
+- Wk2l1 Dummy variable creating equivalence classes (how does canonical element help reject other equivalents)
+-Wk4L1 Explicit representation of multisets
+-Wk2L1 Other representation of k-ary relations
+-Wk5L1 Lex-leader and lex^2 connection/difference
 
 ** Concurrency
