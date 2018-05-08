@@ -506,7 +506,7 @@ The lex-leader method is a way of applying lexicographic ordering to break all s
 \item Choose an ordering on the variables
 \item Add one lexicographic orderin constraint per symmetry
 \end{enumerate}
-Although a huge number of constraints might be needed, sometimes the lex constraints collapse into simpler forms (like in the explicit set representation). The compromise is to only use a subset of the lex-leader constraints. For example, given the array
+Although a huge number of constraints might be needed, sometimes the lex constraints collapse into simpler forms (like in the explicit set representation). A large number of constraints is needed because one constraint is needed for each possible permutation of the symmetrical transformation of the problem instance. The compromise is to only use a subset of the lex-leader constraints. For example, given the array
 \begin{table}[H]
 \centering
 \begin{tabular}{| c | c | c |}
@@ -527,7 +527,13 @@ with row and column symmetry, an ordering on variables ABCDEF can be chosen. Wit
 This prevents it from being possible to obtain a ``smaller'' assignment that the one currently defined by applying symmetry. Depending on the problem, this could require a factorial number of constraints, which is too many and unscalable. This is where the $\text{Lex}^{2}$ ordering comes in.
 
 \subsubsection{$\text{Lex}^{2}$ ordering}
-A significant fraction of the lex-leader constraints for row/column symmetry can be represented by lex ordering only the rows and columns.
+A significant fraction of the lex-leader constraints for row/column symmetry can be represented by lex ordering only the rows and columns. However, it is not longer guaranteed to remove all symmetry in the problem. For example,
+AD > BE
+BE > CF
+ABC > DEF
+are the $Lex^{2}$ constraints, which can be found in the full lex-leader constraints.
+
+
 
 \subsection{Viewpoints}
 The fundamental formulation to any constraint model is the selection of a viewpoint. A viewpoint is defined as a set of decision variables and domains sufficient to characterise the problem. The rest of the model and constraints follows from this choice of variables and domains.
@@ -575,6 +581,11 @@ introduces a new implied constraint
 \begin{equation*}
 E[1] < E[2] < E[3] < ... < E[n]
 \end{equation*}
-making the original \texttt{AllDifferent} constraint redundant. 
+making the original \texttt{AllDifferent} constraint redundant.
+\n
+$\text{Lex}^{2}$ ordered BIBD means both rows and columns are ordered as binary numbers. It can be seen that the initial row and column have 0s initially, so we can have stronger constraints defined.
+- Cannot swap row/cols where a 1 is before a 0 in the first row/col
+- Split into blue/red sections
+- Stronger constraints because the two exact sections must sum to a number, rather than the whole row must sum to a larger number
 \end{document}
 
