@@ -251,11 +251,105 @@ $2n$ features with a quadratic function can be used instead
 \begin{equation*}
 X_{1}, X_{1}^{2}, X_{2}, X_{2}^{2}, ..., X_{n}, X_{n}^{2}
 \end{equation*}
-Although the decision boundary found in the enlarged feature space is still linear, it is non-linear in the original feature space as it is in the form $q(x) = $ where $q$ is a quadratic or higher-order polynomial. However, this has the issue of creating too many features for a high number of polynomials. This is known as the \textbf{primal} problem.
+Although the decision boundary found in the enlarged feature space is still linear, it is non-linear in the original feature space as it is in the form $q(x) = $ where $q$ is a quadratic or higher-order polynomial. However, this has the issue of creating too many features for a high number of polynomials.
+\subsubsection{Priaml and dual optimisation problem}
+The support vector optimisation problem
+\begin{align*}
+  &\text{maximise } M \\
+  &\text{subject to } \sum_{j=1}^{n}\beta_{j}^{2} = 1, \\
+  &y_{i}(\beta_{0} + \beta_{1}x_{i1} + ... + \beta_{n}x_{in}) \geq M(1 - \epsilon_{i}) \\
+  &\epsilon_{i} \geq 0, \sum_{i=1}^{n}\epsilon_{i} \leq C
+\end{align*}
+can be turned into an objective function by \textbf{Lagrange relaxation}
+\begin{equation}
+  L_{P} = \frac{1}{2}||\beta||^{2} + C\sum_{i=1}^{n}\epsilon_{i}
+  - \sum_{i=1}^{n}\alpha_{i}[y_{i}(x_{i}^{T}\beta + \beta_{0}) - (1 - \epsilon_{i})]
+  - \sum_{i=1}^{n}\mu_{i}\epsilon_{i}
+\end{equation}
+where $C$, $\alpha_{i}$ and $\mu_{i}$ are lagrange multipliers, which serve as a substitute for hard constraints and must be positive. This objective function is called the \textbf{primal} problem.
+\begin{itemize}
+\item $\frac{1}{2}||\beta||^{2}$ maximises the margin by minimising $||\beta||$
+\item $C\sum_{i=1}^{n}\epsilon_{i}$ is the tolerance for violations of the margin and hyperplane
+\item $\sum_{i=1}^{n}\alpha_{i}[y_{i}(x_{i}^{T}\beta + \beta_{0}) - (1 - \epsilon_{i})]$ punishes errors as the expression becomes negative if a data point is on the wrong side of the margin
+\item $\sum_{i=1}^{n}\mu_{i}\epsilon_{i}$ makes $\epsilon_{i}$ positive by punishing negative values
+\end{itemize}
+The primal problem is difficult to optimise for. The constraints are implicit rather than hard and violations are allowed, but punished, which follows from the soft margin classifier of allowing violations. The primal problem can be transforms into the \textbf{dual problem} which is easier to solve. This is done by differentiating with respect to $\beta, \beta_{0}$ and $\epsilon_{i}$, which gives
+\begin{align}
+  \beta &= \sum_{i=1}^{n}\alpha_{i}y_{i}x_{i} \\
+  0 &= \sum_{i=1}^{n}\alpha_{i}y_{i} \\
+  \alpha_{i} &= C - \mu_{i}
+\end{align}
+These values can be put back into the primal function to give the dual function
+\begin{equation}
+L_{D} = \sum_{i=1}^{n}\alpha_{i} - \frac{1}{2}\sum_{i=1}^{n}\sum_{i'=1}^{n}\alpha_{i}\alpha_{i'}y_{i}y_{i'}x_{i}^{T}x_{i'}
+\end{equation}
+which is easier to put into a standard solver.
 
-\subsubsection{Dual optimisation problem}
-
+\subsubsection{Support vector classifier solution}
+By solving the primal or dual functions, the solution to the support vector classifier can be found. It turns out that the solutions only involves the \textit{inner product} of the data points, defined as
+\begin{equation}
+\langle x_{i}, x_{i'} \rangle = \sum_{j=1}^{n}x_{ij}x_{i'j}
+\end{equation}
+The support vector classifier can then be represented as
+\begin{equation}
+f(x) = \beta_{0} + \sum_{i=1}^{p}\alpha_{i}\langle x,x_{i} \rangle
+\end{equation}
+where there are $p$ parameters $\alpha_{i}$ per training example. To esimate the parameters, all that is needed is the dot product of the training pair $\langle x,x_{i} \rangle$. Although this means that to evaluate the function $f(x)$, the dot product must be computed for each new point $x$ and every existing training point $x_{i}$. However, $\alpha_{i}$ is only nonzero for support vectors, so a lot of computation can be saved by only computing the functions for the set of support vectors rather than every single training point.
+\n
+In summary, only the dot product $\langle x,x_{i} \rangle$ is needed in computing the coefficients of the linear classifier $f(x)$.
 \subsubsection{Kernel trick}
+Now the trick to extend the support vector classifier to a support vector machine that works on non-linear data is to replace the dot product with a \textit{generalisation} in the form
+\begin{equation}
+K(x_{i},x_{i'})
+\end{equation}
+where $K$ is some kernel function. This is very similar to basis expansions as the kernel $K$ defines a basis function to apply on $x_{i}$ and $x_{i'}$.
+\begin{equation}
+K(x_{i},x_{i'}) = \langle h(x_{i}),h(x_{i'}) \rangle
+\end{equation}
+where $h$ is the basis expansion. There are many common kernels that can be used, including the original linear kernel,
+\begin{itemize}
+\item Linear kernel
+  \begin{equation}
+    K(x_{i}, x_{i'}) = \sum_{j=1}^{n}x_{ij}x_{i'j}
+  \end{equation}
+\item Polynomial kernel where $d$ is the polynomial degree
+  \begin{equation}
+    K(x_{i}, x_{i'}) = (1 + \sum_{j=1}^{n}x_{ij}x_{i'j})^{d}
+  \end{equation}
+\item Radial kernel
+  \begin{equation}
+    K(x_{i}, x_{i'}) = \text{exp}(\gamma \sum_{j=1}^{n}(x_{ij} - x_{i'j})^{2})
+  \end{equation}
+\end{itemize}
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.4\textwidth}
+  \centering
+  \includegraphics[width=1\textwidth, keepaspectratio]{imgs/polynomial-kernel.png}
+  \caption{SVM with a polynomial kernel of degree 3}
+\end{subfigure}
+\hspace*{\fill}
+\begin{subfigure}{0.4\textwidth}
+  \centering
+  \includegraphics[width=1\textwidth, keepaspectratio]{imgs/radial-kernel.png}
+  \caption{SVM with a radial kernel}
+\end{subfigure}
+\end{figure}
+
+\subsection{Hinge loss function}
+It turns out that SVMs have a close connection to logistic regression. The optimisation problem for SVMs can be rewritten in the form
+\begin{equation}
+J(\beta) = \frac{1}{N}\sum_{i=1}^{n}(1 - y_{i}(x_{i}^{T}\beta + \beta_{0})) + \lambda \sum_{j=1}^{n}\beta_{j}^{2}
+\end{equation}
+where
+\begin{itemize}
+\item $J(\beta)$ is the cost function
+\item $(1 - y_{i}(x_{i}^{T}\beta + \beta_{0}))$ is the \textbf{hinge loss}
+\item $\lambda \sum_{j=1}^{n}\beta_{j}^{2}$ is the regularisation
+\end{itemize}
+This function looks very similar to the functions for logistic regression, but using a hingle loss function rather than a squared error loss. Further, the regularisation term $\lambda \sum_{j=1}^{n}\beta_{j}^{2}$ is the same as a ridge $l_{2}$ norm in linear regression.
+\n
+The difference between support vector classification, which uses the hinge loss, and logistic regression, which uses a squared error loss is the data points that are on the correct side of the margin do not affect the classifier. This comes from the hinge loss characteristic where the loss function is exactly zero when $y_{i}(\beta_{0} + \sum_{j=1}^{n}\beta_{j}x_{ij}) /geq 1$, corresponding to data points on the right side of the margin. In contrast, the loss function for logistic regression is never zero, though it can be very small for data points that are far away.
 \end{document}
 
 
