@@ -1,0 +1,41 @@
+\documentclass[CS4204-Notes.tex]{subfiles}
+\begin{document}
+
+\section{Evaluation strategies}
+Evaluation strategies use lazy higher-order functions to separate the two concerns of specifying the algorithm and specifying the program's dynamic behaviour. A function definition can then be split into two parts: the algorithm and the strategy.
+\begin{lstlisting}[caption={The strategy type specifies the ``evaluation'' type.}]
+type Strategy a = a -> Eval a
+\end{lstlisting}
+The separation of concerns makes both the algorithm and the dynamic behaviour easier to comprehend and modify. Changing the algorithm may entail specifying new dynamic behaviour and conversely, it is easy to modify the strategy without changing the algorithm. Strategies have several desirable properties:
+\begin{itemize}
+\item Strategies are powerful - simple strategies can be composed, or passed as arguments to form more elaborate strategies
+\item Strategies can be generic over all types in a language
+\item Strategies are extensible - allowing a user to define new application-specific strategies
+\item Strategies are type safe - the normal type system applies to strategic code
+\end{itemize}
+It should be possible to understand the meaning of a function without considering its behaviour. Strategies also help fight the laziness which only evaluates when needed.
+\n
+The idea of strategies is to abstract the algorithm from the behaviour, for example different strategies can be applied to the same algorithm that results in different parallel behaviour.
+\begin{lstlisting}[caption={Evaluate \texttt{qsort xs} completely}]
+qsort xs `using` rdeepseq
+\end{lstlisting}
+\begin{lstlisting}[caption={Evaluate \texttt{qsort xs} as a data parallel computation}]
+qsort xs `using` parList rdeepseq
+\end{lstlisting}
+
+\subsection{Basic evaluation strategies}
+There are three most basic strategies which specify simple evaluation:
+\begin{itemize}
+\item \textbf{r0} - no evaluation
+\item \textbf{rseq} - evaluate the expression
+\item \textbf{rpar} - spark the expression
+\end{itemize}
+The \texttt{\textquoteback using\textquoteback} is a keyword used to apply a strategy, for example
+\begin{lstlisting}
+  using :: a -> Strategy a -> a
+
+  f x `using` rpar --spark f x
+  f x `using` rseq --evaluate f x
+\end{lstlisting}
+The line \texttt{e \textquoteback using\textquoteback strat} specifies that expression \texttt{e} uses strategy \texttt{strat}.
+\end{document}

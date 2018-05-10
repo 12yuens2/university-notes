@@ -1,0 +1,48 @@
+\documentclass[CS4204-Notes.tex]{subfiles}
+\begin{document}
+
+\section{Parallel skeletons}
+A skeleton is an implementation of a parallel pattern that allows pluggable higher-order functions. They are like templates which can be instantiated with concrete worker functions. For example, take the general divide and conquer function
+\begin{lstlisting}[caption={A general divide and conquer pattern}]
+  dc :: Strategy b -> (a -> [a]) -> (a -> Bool) -> ([b] -> b) -> (a -> [b]) -> a -> b
+  dc strat splitf thresholdf combinef seqworkerf input = combinef results
+    where results =
+      if thresholdf input then
+        seqworkerf input
+      else
+        parMap strat (dc strat splitf thresholdf combinef seqworkerf) (splitf input)
+\end{lstlisting}
+It requires five arguments (excluding the strategy)
+\begin{itemize}
+\item The \texttt{splitf} function - which specifies how to divide the input
+\item The \texttt{thresholdf} function - which specifies when is the input simple enough to stop parallelising
+\item The \texttt{combinef} function - which specifies how to combine the results
+\item The \texttt{seqworkerf} function - which specifies what should actually be done to the input. Here it is also the sequential work, or base case of the divide and conquer
+\item The input data
+\end{itemize}
+By passing in the appropriate functions into the \texttt{dc} function, we are instantiating the divide and conquer skeleton.
+\n
+Skeletons may be divided into two types
+\begin{enumerate}
+\item Algorithmic skeletons - that capture some high-level parallel pattern
+\item Behavioural (implementation) skeletons - that define some specific behaviour on a particular parallel architecture
+\end{enumerate}
+Most skeletons are algorithmic, but often include some behavioural information.
+\n
+Finally, skeletons can be defined for most languages using a library that provides functions as arguments. In languages like Java, they can be defined as abstract classes for the programmer to override. 
+
+\subsection{Advantages and disadvantages of skeletons}
+\subsubsection{Advantages}
+\begin{itemize}
+\item Skeletons match common patterns of parallelism. If the pattern can be identified, then it is known which skeleton should be used as the skeletons are the general implementations of the pattern
+\item Skeletons help structure parallelism by providing hooks that just need to be instantiated
+\item Skeletons are general - they can be applied in many settings and used across different languages
+\item Skeletons often have strong cost models, making it easy to calculate the cost of a skeleton
+\end{itemize}
+\subsubsection{Disadvantages}
+\begin{itemize}
+\item Skeletons are fixed, meaning there is only a small fixed set of skeletons which cannot be altered if they do not fit the algorithm
+\item Skeletons cannot be nested as their implementation does not allow this. Further, combining cost models is difficult or impossible
+\item Skeletons may impose a rigid structure. If the problem uses a skeleton, the parallelism cannot be changed, making it difficult to refactor a program as the skeleton cannot be removed
+\end{itemize}
+\end{document}
