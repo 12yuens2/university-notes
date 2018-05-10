@@ -62,4 +62,9 @@ Sometimes, instead of increasing the feature space with basis expansions, we wis
 \end{itemize}
 Principle component analysis is a way to reduce dimensionality automatically. It is an unsupervised technique as no output $Y$ is needed, but is often used as a way to produce derived variables for use in supervised learning.
 
+\subsubsection{Principle components}
+Suppose we are given a dataset with $n$ features $X_{1}, X_{2}, ..., X_{n}$ and $m$ data points, as part of the data visualisation and exploration stage, we may want to plot a two-dimensional scatterplot for each pair of features to find any correlations. However, there are $\frac{n(n-1)}{2}$ such scatterplots. If $n$ is large, it becomes less feasible to look at all of them. Furthermore, it is likely none of them will be informative as each only contain a small fraction of the total information present in the dataset. As a solution to this, we wish to find a lower-dimensional representation of the data that still captures as much information as possible so we can plot the data in this lower-dimensional space.
+\n
+PCA does exactly this by finding a low-dimensional representation of the dataset that contains as much information as possible. Note that mean normalisation and feature scaling should be performed \textit{before} applying PCA. 
+
 \end{document}
