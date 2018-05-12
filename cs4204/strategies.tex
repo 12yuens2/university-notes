@@ -30,6 +30,19 @@ There are three most basic strategies which specify simple evaluation:
 \item \textbf{rseq} - evaluate the expression
 \item \textbf{rpar} - spark the expression
 \end{itemize}
+\begin{lstlisting}[caption={Definitions of basic strategies}]
+  r0 :: Strategy a
+  r0 x = return x
+
+  rseq :: Strategy a
+  rseq x = x `pseq` return x
+
+  rpar :: Strategy a
+  rpar x = x `par` return x
+\end{lstlisting}
+Strategies all do some kind of evaluation and return a result. The \texttt{r0} strategy does nothing as it is there for the sake of the type system to specify a strategy that does \textit{no} evaluation.
+
+\subsection{Using strategies}
 The \texttt{\textquoteback using\textquoteback} is a keyword used to apply a strategy, for example
 \begin{lstlisting}
   using :: a -> Strategy a -> a
@@ -38,4 +51,57 @@ The \texttt{\textquoteback using\textquoteback} is a keyword used to apply a str
   f x `using` rseq --evaluate f x
 \end{lstlisting}
 The line \texttt{e \textquoteback using\textquoteback strat} specifies that expression \texttt{e} uses strategy \texttt{strat}.
+\n
+The \texttt{withStrategy} function can also be used to apply strategies. It is defined as
+\begin{lstlisting}
+  withStrategy :: Strategy a -> a -> a
+
+  --Example
+  withStrategy rseq (qsort xs)
+\end{lstlisting}
+It evaluates \texttt{e} with strategy \texttt{strat} and is most useful for building new strategic functions and skeletons
+\begin{lstlisting}
+spark = withStrategy rpar
+\end{lstlisting}
+
+\subsection{Evaluation}
+The \textbf{Eval} type wraps up values and is defined as a monad
+\begin{lstlisting}
+  data Eval a = Done a
+
+  instance Monad Eval where
+    return = Done
+    m >>= k = case m of
+      Done x -> k x
+
+  -- Puts values into the monad
+  return :: Eval a
+  
+  -- Sequences two Eval operations
+  (>>=) :: Eval a -> (a -> Eval b) -> Eval b
+  
+  -- Extracts results from the monad
+  runEval :: Eval a -> a
+\end{lstlisting}
+In Haskell, the evaluation is \textbf{lazy}, which means it only evaluates what is needed for a result. For data structures like lists, this means only the parts of the structure that are needed are created, which allows infinite structures to be created. By default, Haskell uses the \texttt{rseq} strategy for evaluation.
+
+\subsubsection{Deep evaluation}
+To force evaluation as part of a strategy, we need to evaluate the entire result, for example if we wanted the entire list result. To do this, the \texttt{rdeepseq} strategy is needed. \texttt{rdeepseq} forces the evaluation when needed, which fully evaluates the expression.
+\begin{lstlisting}
+  rdeepseq :: NFData a => Strategy a
+  rdeepseq x = rnf x `pseq` return x
+\end{lstlisting}
+It is usually better than \texttt{rseq} but may evaluate twice. Further, it forces eager evaluation.
+
+\subsubsection{NFData class}
+The \texttt{NFData} class is a Haskell type class which incldues the \texttt{rnf} operations, whose purpose is to fully evaluate its argument. It is defined using \texttt{seq} but does not guarantee the evaluation happens in order.
+\begin{lstlisting}
+  class NFData a where
+    rnf :: a -> ()
+    rnf x = x `seq` ()
+\end{lstlisting}
+
+\subsubsection{Strategy composition}
+
+
 \end{document}
