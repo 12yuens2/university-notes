@@ -141,12 +141,13 @@ For some classification problems, a linear logistic regression model is not enou
 
 \subsection{Cost function}
 In logistic regression, the same squared error cost used in linear regression cannot be used because it doesn't make much sense. A cost function such as the squared error measures the \textit{distance} between the predict value and actual value, however, this distance is not easily identified for a classification problem, where the actual value is which class the data belongs in. 
-\begin{equation}
-Cost(h(x),y) = \begin{cases}
+\begin{align}
+Cost(h(x),y) &= \begin{cases}
 	-log(h(x)) & \text{if } y = 1 \\
 	-log(1-h(x)) & \text{if } y = 0
-	\end{cases}
-\end{equation}
+      \end{cases} \\
+Cost(h(x),y) &= -ylog(h(x)) - (1 - y)log(1 - h(x))
+\end{align}
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth, keepaspectratio]{imgs/logistic-regression-cost.png}

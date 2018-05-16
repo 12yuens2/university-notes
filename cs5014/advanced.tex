@@ -26,7 +26,14 @@ Now the same linear regression can be run on the new input as the output is a li
 \subsection{Piecewise linear regression} Basis expansions are in fact more general than polynomial expansion. Basis functions can also be defined to create a piecewise linear regression model. 
 
 \subsection{Regression splines}
-
+A spline is a piecewise \textit{polynomial} that uses $m + k$ basis functions
+\begin{align}
+  h_{i}(X) &= X^{i-1}, \forall\ i = 1, 2, ..., m
+  h_{m+j}(X) &= (X - \xi_{j})_{+}^{m-1}, \forall\ j = 1, 2, ..., k
+\end{align}
+where $m$ is th order of the spline + 1, for example a cubic spline is order 4 and $k$ is the number of knots in the piecewise.
+\n
+The first set of basis functions $h_{i}(X)$ are the normal basis functions for a polynomial expansion while the second set of basis functions $h_{m+j}(X)$ determine the knots. In particular, $\xi_{j}$ determines the location of the $j$th knot. 
 \section{Bayesian classification}
 In Bayesian terms, input variables are called \textbf{evidence}. The Bayes rule allows the probability and evidence to be expressed into simpler distributions:
 \begin{equation}
