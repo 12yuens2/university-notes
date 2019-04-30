@@ -1,0 +1,163 @@
+\documentclass[Report.tex]{subfiles}
+\begin{document}
+\section{Language modelling}
+Language modelling is the statistical model of sequences of
+symbols (words). In other words, what is the probability
+of a given sentence in a given language (in a given domain)?
+A good understanding of the language is needed to accurately
+do language modelling.
+
+For example, in speech recognition, we could have three hypotheses:
+\begin{itemize}
+\item It's not easy to wreck a nice beach
+\item It's not easy to wreck an ice beach
+\item It's not easy to recognise speech
+\end{itemize}
+Which one is more likely?
+
+Or in spelling correction: \textbf{He asked weather} [whether]
+\textbf{the sale} [sail] \textbf{of the boat was raced} [raised]
+
+\subsection{Word prediction}
+Language modelling is closely connected to word prediction. For example,
+given a sentence ``its water is so transparent that'', what is the
+probability that the next word is ``the''? This example can be reduced
+to a language model (of sentence prefixes):
+\begin{equation}
+  P(\text{the} | \text{its water is so transparent that}) =
+  \frac{P(\text{its water is so transparent that the})}{P(\text{its water is so transparent that})}
+\end{equation}
+Or generally:
+\begin{equation}
+P(w_i | P^{i-1}_1) = \frac{P(w^i_1}{P(w^{i-1}_1)}
+\end{equation}
+where $w^i_1 = w_1 ... w_i$ so all the words in a sentence up to the $i$-th.
+
+For a complete sentence of length $n$, the chain rule can be applied
+\begin{equation}
+P(w^n_1) = P(w_1) \cdot P(w_2 | w_1) \cdot P(w_3 | w_1w_2)\ ...\ P(w_n | w^{n-1}_1)
+\end{equation}
+If the conditional probabilities can be computed exactly, then exact
+language modelling can be done. However, the question is how to determine
+such probabilities.
+
+This is typically done with relative frequency estimation, where we can
+estimate the probability of an event by counting the observations of that
+event, divided by the number of observations, in suitably characteristic data.
+This ratio is called the \textbf{relative frequency}. However, this doesn't
+always work because of sparse data to find all occurrences, especially of
+rare but possible events.
+
+\subsection{N-grams}
+In practice, a good estimation of $P(w_i | w^{i-1}_1)$ is
+$P(w_i | w^{i-1}_{i-N+1})$ for a suitable choice of $N$, usually being
+1, 2, 3 or 4. So we only look at the current word and the preceding
+$N-1$ words, so in total at $N$ symbols at a time.
+
+Bigrams (2-grams) correspond to what is known as the \textbf{Markov}
+assumption - that probability of a word only depends on the previous word.
+With unigrams (1-grams), we can estimate the probability that a certain word
+appears in the corpus, which gives the probability of a sentence of length $n$ as
+\begin{equation}
+P(w_1) \cdot P(w_2) \cdot\ ...\ P(w_n)
+\end{equation}
+and the probability of each word can be estimated by $\frac{C(w_n)}{m}$ where $m$
+is the length of the corpus.
+
+It is also important to distinguish between types and tokens:
+\begin{itemize}
+\item Types - distinct words in a corpus
+\item Tokens - all individual word occurrences
+\end{itemize}
+The length of a corpus is measured in terms of number of tokens.
+
+\subsection{Evaluation}
+A language model must be evaluated to determine how good it is. There are generally
+two ways to do this:
+\begin{itemize}
+\item \textbf{Extrinsic evaluation} - Use the model in some application and measure
+  the performance of the application
+\item \textbf{Intrinsic evaluation} - Look at the performance of the model in isolation
+  without concern for any larger application
+\end{itemize}
+Extrinsic evaluation is difficult to do reliably due to external factors, it is
+also very time consuming.
+
+\subsubsection{Intrinsic evaluation}
+Intrinsic evaluation can be done simply on the same corpus the language model is created
+from. In the beginning, the corpus can be dividing into training and testing sets. The
+language model is trained on the training set and evaluated on the testing set. A good
+metric for the performance of the model is \textbf{perplexity}.
+The perplexity of language model $P$ on test data $t$ of length $n$ is defined as
+\begin{equation}
+\sqrt[n]{\frac{1}{P(t)}}
+\end{equation}
+The degree of the root in effect averages the `surprise' over all the words of the
+test data, so how much surprise per word. For a large enough test data obtained in
+a uniform way, perplexity is more or less constant, i.e. independent of $n$. The
+lower the perplexity, the better the model.
+
+\subsection{Smoothing}
+For trigrams, it is often found that some sequences of length 3 might never
+occur in the training data because they are ungrammatical. Some others might be
+grammatical, but never observed because there isn't enough data. With a pure
+trigram model, each such sequence in the test data will lead to a sentence
+probability of 0. Because of this, a technique called \textbf{smoothing} is
+used to help give non-zero probability to unseen events.
+
+\subsubsection{Laplace smoothing}
+The idea behind laplace smoothing is to pretend everything occurs once more
+than the actual count. It is also called the \textit{add-one smoothing}.
+For $n$ tokens with $m$ types, the adjusted estimate of the probability of
+an event $w$ is
+\begin{equation}
+P(w) = \frac{C(w) + 1}{n + m}
+\end{equation}
+The extra $m$ comes form pretending there are $m$ more observations, one
+for each type. For example, Laplace smoothing for bigrams gives
+the probability
+\begin{equation}
+P(w_i | w_{i-1}) = \frac{C(w_{i-1}w_i) + 1}{C(w_{i-1}) + V}
+\end{equation}
+wher $V$ is the size of the lexicon. However, this probability will be
+lower than the probability without smoothing for sequences that occur often,
+making it too crude in practice to use.
+
+\subsubsection{Good-Turing smoothing}
+A simple way of understanding the Good-Turing smoothing is to use an analogy
+to fishing.
+
+Suppose there are \textit{at least} 6 species of fish in a lake:
+carp, perch, whitefish, trout, salmon and eel (but there could be more:
+catfish, bass, ...) If someone catches 10 carp, 3 perch, 2 whitefish,
+1 trout, 1 salmon and 1 eel for a total of 18 fish, there are 3 species
+that have only been seen once. So we can assume the probability of another
+new species caught next time is $\frac{3}{8}$.
+
+The other counts will have to be adjusted. Let $N_c$ be the frequency of
+frequency $c$:
+\begin{equation}
+N_c \sum_{w:C(w) = c} 1
+\end{equation}
+In the fish example, how many species of fish are seen $c$ times?
+$N_1 = 3, N_2 = 1, N_3 = 1, N_10 = 1$; all other values are zero.
+The adjusted counts become
+\begin{equation}
+C^{*}(w) = (C(w) + 1)\frac{N_{C(w) + 1}}{N_{C(w)}}
+\end{equation}
+So the adjusted probability $P^{*}(w)$ of event $w$ becomes
+
+If $C(w) = 0$
+\begin{equation}
+P^{*}(w) = \frac{N_1}{n}
+\end{equation}
+where $n$ is the total number of observations.
+
+If $C(w) > 0$
+\begin{equation}
+P^{*}(w) = \frac{C^{*}(w)}{n} = \frac{(C(w) + 1) \cdot N_{C(w) + 1}}{n \cdot N_{C(w)}}
+\end{equation}
+
+\subsubsection{Katz backoff}
+TODO
+\end{document}

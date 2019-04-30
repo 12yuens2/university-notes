@@ -13,11 +13,11 @@ stem `believe' and affixes un-, -able and -ly.
 
 Affixes come in many forms:
 \begin{itemize}
-	\item \textbf{prefix} - precedes the stem (un-)
-	\item \textbf{suffix} - follow after the stem (-able)
-	\item \textbf{infix} - inserted into the stem
-	\item \textbf{interfix} - linking two words together (speed -o- meter)
-	\item \textbf{circumfix} - one part before and one part after
+\item \textbf{prefix} - precedes the stem (un-)
+\item \textbf{suffix} - follow after the stem (-able)
+\item \textbf{infix} - inserted into the stem
+\item \textbf{interfix} - linking two words together (speed -o- meter)
+\item \textbf{circumfix} - one part before and one part after
 \end{itemize}
 English has no real infixes or circumfixes, and there are no real infixes
 in other European languages either.
@@ -26,16 +26,15 @@ in other European languages either.
 \subsection{Combining morphemes}
 There are a few ways of combining morphemes together
 \begin{itemize}
-	\item \textbf{inflection} - combining the stem with a grammatical
-		morpheme, resulting in a word of the same class.
-		This may sometimes involve agreement.
-		(e.g. I walk, he walks)
-	\item \textbf{derivation} - creating a word in another class
-		(e.g. computer $\rightarrow$ computerise $\rightarrow$ computerisation)
-	\item \textbf{compounding} - combining stems (e.g. dog + house $\rightarrow$ doghouse)
-	\item \textbf{clitisation} - attaching a clitic to the stem. A clitic is
-		a morpheme that acts as a word, but is typically reduces in form
-		and is attached to another word (e.g. we've)
+\item \textbf{inflection} - combining the stem with a grammatical
+  morpheme, resulting in a word of the same class.
+  This may sometimes involve agreement. (e.g. I walk, he walks)
+\item \textbf{derivation} - creating a word in another class
+  (e.g. computer $\rightarrow$ computerise $\rightarrow$ computerisation)
+\item \textbf{compounding} - combining stems (e.g. dog + house $\rightarrow$ doghouse)
+\item \textbf{clitisation} - attaching a clitic to the stem. A clitic is
+  a morpheme that acts as a word, but is typically reduces in form
+  and is attached to another word (e.g. we've)
 \end{itemize}
 
 \subsubsection{Inflection}
@@ -44,13 +43,116 @@ Examples of this include verbs in -s form, or -ing participle, plurals
 or nouns etc. However, there are some irregular forms such as
 catch $\rightarrow$ caught. It is important to remember inflection does
 not change the class of a word, only the grammar or agreement.
+
 \subsubsection{Derivation}
 In derivation, the class of the words are changed.
 \begin{itemize}
-
+\item verb into noun (kill $\rightarrow$ killer, -er)
+\item noun into verb (digit $\rightarrow$ digitise, -ise)
+\item noun into adjective (fur $\rightarrow$ furry, -r)
+\item adjective into noun (fuzzy $\rightarrow$ fuzziness, -iness)
+\item adjective into adverb (quick $\rightarrow$ quickly, -ly)
 \end{itemize}
+Note most of these derivations are suffix morphemes. Further,
+derivations are often not productive, results in meaning that
+is not always predictable.
 
 \subsubsection{Compounding}
-\subsubsection{Clitisation}
+Where possible morphology is seen as independent from conventions
+of spelling. For example, ``sunglasses'', ``life-threatening''
+and ``football stadium'' are all examples of compounds, even though
+the connection or interfix does not always exist.
 
+In practical systems, the distinctions between morphology and
+orthography is often blurred, for obvious reasons.
+
+\subsubsection{Clitisation}
+There are two types of clitics:
+\begin{itemize}
+\item \textbf{proclitic} - before the main word
+\item \textbf{enclitic} - after main word
+\end{itemize}
+
+In English, the `an' in `an apple' is sometimes considered to
+be a proclitic.
+
+\subsubsection{Non-concatenative morphology}
+Most of the above examples are \textbf{concatenative morphology},
+where words are built up of morphemes one after the other.
+In some other languages (e.g. semitic languages) there is a
+\textbf{template-morphology} instead using a root-and-pattern
+morphology.
+
+For example, in Hebrew the root \textbf{l-m-d} (three consonants
+$C_1-C_2-C_3$ means study. The meaning is then changed by
+inserting affixes between the root.
+\begin{table}[H]
+\begin{tabular}{l l l}
+  \textbf{pattern} & \textbf{form} & \textbf{meaning} \\
+  $C_1$a$C_2$a$C_3$ & lamad & he studied \\
+  $C_1$i$C_2$e$C_3$ & limed & he taught \\
+  $C_1$u$C_2$a$C_3$ & lumad & he was taught \\
+  $C_1$a$C_2$an$C_3$ & lamdan & scholar 
+\end{tabular}
+\end{table}
+
+\subsection{Agreement}
+In English, there is \textbf{agreement} in \textbf{number}
+(singular/plural) and \textbf{person} (1st, 2nd, 3rd) between
+the subject and verb. For example
+\begin{itemize}
+\item I \underline{am} at the fair (1st person singular)
+\item She \underline{is} at the fair (2nd person singular)
+\item She and her friend are at the fair (2nd person plural)
+\end{itemize}
+Other languages also have agreement in \textbf{case}
+(nominative, genitive) and/or \textbf{gender}
+(masculine/feminine in French and Italian). Gender classes of nouns
+may be detached from meanings.
+
+\subsection{Finite-state lexica}
+A simple approach to constructing a FSA accepting words in a
+language is to use morphemes.
+\begin{enumerate}
+\item Model the morphotactics, i.e. which classes of morphemes
+  can follow morphemes of which other classes
+\item Compile lists of classes of those morphemes
+\item Combine the two, substituting the morphemes for classes
+  in the FSAs
+\item Take union of all such FSAs (and determinise for efficiency)
+\end{enumerate}
+A FSA can be constructed to distinguish between nouns having regular
+plurals (reg-noun) and irregular ones, for which we separately
+list singulars and plurals.
+
+\imagefig{0.6\textwidth}{imgs/fsa-lexicon.png}{Morphotactics as FSA}
+
+Similarly, morphotactics can be used for verb forms and other inflectional
+morphology. Derivational morphology is more complex. The FSAs can also be
+generalised to FSTs to output information about which word was accepted
+with which features (e.g. number, gender, verb tense, etc.)
+
+\subsection{Morphological parsing}
+Morphologies can be parsed by dividing a word into its morphemes, and
+obtaining grammatical properties of those morphemes. For example,
+cats $\rightarrow$ cat + N + PL.
+
+Sometimes, the mapping directly can be difficult to model,
+so multiple tapes need to be used:
+\begin{itemize}
+\item \textbf{Lexical form} - fox + N + PL
+\item \textbf{Intermediate form} - fox\^{}s#
+\item \textbf{Surface form} - foxes
+\end{itemize}
+Here the carot \^{} stands for a morpheme boundary and # stands
+for a word boundary.
+
+The mapping form lexical form to intermediate form is relatively
+straightforward using a FST. The mapping from intermediate form
+to surface form can be handled by rewriting some rules, such as
+\textit{insert an `e' between \{x, s, z\}\^ and s#}. This rule
+can then be compiled to FST. For several orthographic rules,
+we get several FSTs, which can be combined into a single FST.
+Further composition with FST for the lexical/intermediate mapping.
+The result is typical cascade architecture.
 \end{document}
