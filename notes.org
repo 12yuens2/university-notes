@@ -792,3 +792,22 @@ Relaxed memory consistency varies based on hardware/architecture
 -Wk5L1 Lex-leader and lex^2 connection/difference
 
 ** Concurrency
+- rdeepseq `dot` rpar
+- queue based lock
+- behavioural skeletons
+- evaluate and die, what is the die part?
+
+2013 paper
+- workpool source code implementation
+- how to improve results for workpool
+
+*** Behavioural skeleton
+Adding in implementation details to a skeleton
+- eg not just structural
+pmap :: (a -> b) -> [a] -> [b]
+taskfarm :: Int -> (a -> b) -> [a] -> [b]
+The int gives us some additional information to the influence choices in the implementation. 
+
+- Threshold function is arguably behavioural skeleton
+-> because takes architecture (number of cores) into account
+
