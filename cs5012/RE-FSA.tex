@@ -1,0 +1,213 @@
+\documentclass[Report.tex]{subfiles}
+\begin{document}
+
+\section{Regular expressions and automata}
+Regular expressions are a powerful way to search texts in strings. Most
+programming languages support regular expressions natively in some way.
+They work by searching for patterns and replacing the pattern with another.
+
+For example, the following searches can be performed on the word `woodchuck`:
+\begin{itemize}
+\item \texttt{/d/} matches the \texttt{d} in woodchuck
+\item \texttt{/s/} does not matching anything in woodchuck
+\item \texttt{/ck/} matches the last two letters in woodchuck
+\end{itemize}
+
+\subsection{Basic regular expression patterns}
+Regular expressions are case sensitive, so a lowercase \texttt{/s/} will not
+match words with an upper case S. Square brackets can be used to specify
+a \textbf{disjunction} of characters to match. For example, the \texttt{/[wW]/}
+pattern will match either an upper or lower case w. A dash (\texttt{-}) can
+also be used to specify any one character in a range. For example, 
+\texttt{/[2-5]/} specifies any one of the characters 2, 3, 4 or 5.
+\begin{table}[H]
+\centering
+\begin{tabular}{l l l}
+\textbf{RE} & \textbf{Match} & \textbf{Example pattern} \\
+\texttt{/[wW]oodchuck/} & Woodchuck or woodchuck & ``\underline{Woodchuck}" \\
+\texttt{/[abc]/} & `a', `b' or `c' & ``In uomini, in sold\underline{a}ti" \\
+\texttt{/[1234567890]/} & a digit & ``plenty of \underline{7} to 5" \\
+\texttt{/[0-9]/} & a digit & ``plenty of \underline{7} to 5" \\
+\texttt{/[A-Z]/} & an uppercase letter & ``we should call it \underline{Drenched}"
+\end{tabular}
+\caption{Example regular expressions using square brackets \texttt{[ ]}.}
+\end{table}
+Here are a few basic rules and expressions:
+\begin{itemize}
+\item \texttt{/[\^{}abc]/} matches any character other than a, b or c using the caret `\texttt{\^{}}'\\
+\item \texttt{/./} is a \textbf{wildcard} that matches any character
+\item \texttt{/[abc]+/} matches one or more of a, b or c
+\item \texttt{/[0-9]*/} matches zero or more digits
+\end{itemize}
+There are also a number of aliases for sets of characters that can be used
+as a shortcut.
+\begin{itemize}
+\item \texttt{\textbackslash d} for any digit (same as \texttt{[0-9]})
+\item \texttt{\textbackslash D} for any character other than a digit 
+(same as \texttt{\^{}[0-9]})
+\item \texttt{\textbackslash w} for any alphanumeric or underscore
+\item \texttt{\textbackslash W} converse of the above
+\item \texttt{\textbackslash s} for any whitespace character (spaces and tabs)
+\item \texttt{\textbackslash S} converse of the above
+\end{itemize}
+Repetition can be matched using curly brackets
+\begin{itemize}
+\item \texttt{/\textbackslash d\{2,5\}/} matches between 2 and 5 digits
+\item \texttt{/\textbackslash s\{3,\}/} matches 3 or more whitespaces
+\item \texttt{/\textbackslash d\{4\}/} matches exactly 4 digits
+\end{itemize}
+\textbf{Anchors} can be used to match places in a string rather than characters.
+For example, \texttt{\textbackslash b} can match word boundaries so that
+an expression such as \texttt{/\textbackslash bthe\textbackslash b/} does
+not match the three letters \texttt{the} inside \texttt{other}.
+\begin{itemize}
+\item \texttt{/\^{}/} matches beginning of input string or beginning of line
+\item \texttt{/\$/} matches end of input string or end of line
+\item \texttt{/\textbackslash b/} matches a word boundary
+\end{itemize}
+The power of regular expressions can be captured by a small number of operators
+for concatenation, union and Kleene closure. This defines the class of 
+\textbf{regular languages}.
+
+\subsection{Regular languages}
+The class of regular languages is formally defined as:
+\begin{enumerate}
+\item $\emptyset$ and \{$\epsilon$\} are regular languages ($\epsilon$ stands for
+the \textbf{empty string})
+\item \{$a$\} is a regular language for any symbol $a$ in the `alphabet'
+\item If $L_1$ and $L_2$ are regular languages, then so are:
+	\begin{enumerate}
+	\item $L_1$ \cdot $L_2$ = \{$xy | x \in L_1, y \in L_2$\} (concatenation)
+	\item $L_1$ \cup\ $L_2$ (union/disjunction)
+	\item $L_{1}*$ (Kleene closure)
+	\end{enumerate}
+\end{enumerate}
+Nothing else is a regular language unless it can be obtained through the above rules.
+Regular languages are the languages characterisable by regular expressions,
+so all regular expression operators can be implemented by the three operations
+which define regular languages.
+
+Regular languages are closed under the following operations
+\begin{itemize}
+\item \textbf{intersection} - if $L_1$ and $L_2$ are regular languages, then so is
+$L_1$ \cap\ $L_2$, the language consisting of the set of strings that are in
+\textit{both} $L_1$ and $L_2$.
+\item \textbf{difference} - if $L_1$ and $L_2$ are regular languages, then so is
+$L_1 - L_2$, the language consisting of the set of strings that are in $L_1$
+but not in $L_2$.
+\item \textbf{complementation} - if $L_1$ is a regular language, then so is
+$\sum *$ where $\sum$ is the infinite set of all possible
+strings formed by the alphabet $\sum$ and $\sum *$ is the set of all
+possible strings that aren't in $L_1$.
+\item \textbf{reversal} - if $L_1$ is a regular language, then so is $L_1^R$,
+the language consisting of the set of reversals of all the strings in $L_1$
+\end{itemize}
+The proof that regular expressions are equivalent to finite-state automata 
+has two parts: showing than an automaton can be built for any regular expression
+and showing that a regular language can be built for any automaton.
+
+\subsection{Finite-state automata}
+A finite automata (FA) consists of:
+\begin{itemize}
+\item a finite set $Q$ of \textbf{states}
+\item a finite set $\sum$ of input symbols (\textbf{alphabet)}
+\item an \textbf{initial state} $q_0 \in\ Q$
+\item a set $F \subseteq Q$ of \textbf{final states}
+\item a set $\Delta$ of \textbf{transitions}
+\end{itemize}
+\imagefig{0.75\textwidth}{imgs/fsa.png}{Example of a finite-state automaton with
+an epsilon transition.}
+A transition has the form $(q, a, q')$ which says, go to state $q'$ from $q$
+by reading the next symbol $a$. An epsilon transition $(q, \epsilon, q')$ 
+allows a transition between the states without reading an input symbol.
+
+A string of input symbols is \textbf{accepted} by an automaton if it can
+go from an initial state to a final state by reading all the symbols
+left to right and following a valid sequence of transitions. Therefore,
+the language accepted by a finite-state automaton is the set of strings
+that is accepted by it.
+
+\subsubsection{Deterministic vs. non-deterministic}
+The difference between deterministic and non-deterministic finite automata
+is the existence of epsilon transitions and valid transitions - that is
+to say, for each $q$ and $a$ there is at most one $q'$ such that
+$(q, a, q') \in \Delta$.
+\imagefig{0.75\textwidth}{imgs/nfsa.png}{Example of a non-deterministic
+finite-state automaton. In $q2$ when the symbol $a$ is read, it can
+either move to $q2$ or $q3$.}
+
+It is not the case that non-deterministic finite-state automata are more
+powerful than deterministic automata. For any NFSA, there is exactly one
+equivalent DFSA, although the number of states in the equivalent DFSA
+may be much larger. This is done through the construction of a 
+powerset, where each state of $M'$ represents a set of states of $M$.
+
+\subsubsection{Recognition}
+Assuming an input of length $n$. An input position is a number from 0 to $n$.
+\begin{itemize}
+\item A \textbf{configuration} is defined to be a pair consisting
+of a state and an input position
+\item The \textbf{initial configuration} is $(q_0, 0)$
+\item A configuration $(q, i)$ is \textbf{accepting} if $q \in F$ and $i = n$
+\item The \textbf{agenda} is a set of configurations, which is initially empty.
+\end{itemize}
+Recognition can be run by adding and remove configurations from the agenda on
+every iteration, then if the agenda ever becomes empty, we have run out
+of valid configurations, so the recognition can stop and return a failure.
+If the agenda ever contains an accepting configuration, then we can stop
+and return a success.
+
+\subsubsection{From NFSA to regular expression}
+For each regular expression, we can construct an equivalent finite automata.
+
+\textbf{Proof} by induction:
+\begin{itemize}
+\item Show that the FSAs for $\emptyset$, \{$\epsilon$\} and \{$a$\} for 
+every symbol $a$ can be constructed.
+\item Show that if we have FSAs accepting $L_1$ and $L_2$, then we can
+construct three FSAs accepting $L_1 \cdot L_2$, $L_1 \cup\ L_2$ and $L_1 *$
+respectively.
+\end{itemize}
+
+Another important point for closure is that FSA languages are
+closed under concatenation, union and Kleene star.
+
+Similarly, for each FSA, we can construct a regular expression describing
+the same language with a divide-and-conquer approach. This is more
+tricky than converting from a regular expression to NFSA.
+
+TODO NFSA to RE example
+
+Furthermore, the class of regular languages is closed under:
+\begin{itemize}
+\item intersection ($L_1 \cap\ L_2$)
+\item complementation ($\sum *  - L_1$)
+\item set difference ($L_1 - L_2$)
+\item reversal (replace every string by its mirror image)
+\end{itemize}
+
+\subsection{Finite-state transducers}
+Finite-state transducers are very similar to FSAs, but instead of using a single
+symbol for transitions, a pair of strings ($v$, $v'$) is used, in the input
+and output alphabets respectively.
+
+This means each transition now takes the form $(q, v, v', q')$ where
+\begin{itemize}
+\item $v$ is a string over the input alphabet
+\item $v'$ is a string over the output alphabet
+\end{itemize}
+The transducer goes from state $q$ to $q'$ by reading $v$ from the input
+and writing $v'$ to the output.
+\imagefig{0.4\textwidth}{imgs/fst.png}{Example finite-state transducer.}
+
+FSTs can be seen as reading a pair of strings simultaneously, or as 
+generated two strings simultaneously, or translating from input into output. 
+
+Importantly, the class of rational transductions is \textbf{not} closed under
+intersection, but they are closed under \textbf{inversion} (swap input
+and output parts of all transitions).
+
+\subsubsection{Sequential transducer}
+
+
+\end{document}

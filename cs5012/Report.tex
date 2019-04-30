@@ -1,0 +1,94 @@
+\documentclass{sty/SizheArticle}
+
+\title{Lecture Notes}
+\author{Sizhe Yuen}
+\addbibresource{references.bib}
+\usepackage{sty/sizhetitle}
+\usepackage{amsmath, amsfonts}
+\usepackage{dsfont}
+\usepackage{subfiles}
+\begin{document}
+
+
+\maketitlepage{CS5012 Language and Computation}{Mark-Jan Nederhof}
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+Natural language processing is the idea of getting computers to perform interesting
+tasks involving human languages. The goal is to provide insights in
+how languages are processed.
+
+\subsection{Motivation}
+There is a wealth of written knowledge, especially on the Web in a machine readable
+form. To be able to process and understand this knowledge would be greatly
+beneficial. By improving machine processing of language, both human-machine
+communication and human-human (translation) communication can be improved.
+
+\subsubsection{Example applications}
+Small scale:
+\begin{itemize}
+\item Spelling correction
+\item Hyphenation
+\end{itemize}
+
+Medium scale:
+\begin{itemize}
+\item Web analytics - data mining web pages
+\end{itemize}
+
+Large scale:
+\begin{itemize}
+\item Machine translation
+\item Text summarisation
+\item Question/answer conversation
+\end{itemize}
+
+\subsection{Topics}
+\begin{itemize}
+\item Phonology - how sounds make speech
+\item Morphology - components of words
+\item Syntax - how to put words together
+\item Semantics - meaning of words and sentences (lexical and compositional 
+semantics)
+\item Pragmatics - goals and intentions of the speaker
+\item Discourse - how to put utterances together to give meaningful communication
+\end{itemize}
+
+\subsection{Ambiguity}
+A major problem that all language processing tasks must try to solve is
+ambiguity at some level. An input is \textbf{ambiguous} if \textit{there are
+multiple alternative linguistic structures that can be built for it}.
+Humans generally resolve ambiguity naturally and are unaware of the ambiguity
+through the use of context, world knowledge, common sense, etc.
+
+For example, the sentence ``\textit{I made her duck}" can have multiple meanings:
+\begin{itemize}
+\item I cooked waterfowl for her (to eat)
+\item I cooker waterfowl belonging to her
+\item I created the (plaster?) duck she owns
+\item I caused her to quickly lower her head or body
+\item I waved my magic wand and turned her into undifferentiated waterfowl
+\end{itemize}
+This happens as each word in the sentence can have multiple meanings.
+\begin{itemize}
+\item \textbf{duck} - can be either a noun or a verb
+\item \textbf{her} - can be possessive or dative pronoun
+\item \textbf{make} - can mean `create', `cook' or `force'
+\item \textbf{make} - can be used as a transitive or ditransitive verb
+\end{itemize}
+Models and algorithms used in language processing often try to resolve or
+disambiguate these cases. For example, deciding whether `duck' is a noun or a
+verb can be solved by \textbf{part-of-speech tagging}. This is a kind of
+\textbf{lexical disambiguation}. In contrast, deciding whether `her' and `duck'
+are part of the same entity is an example of \textbf{syntactic disambiguation},
+which can be addressed by probabilistic parsing.
+
+
+\subfile{RE-FSA}
+\subfile{morphology}
+
+\end{document}
+
+
+
