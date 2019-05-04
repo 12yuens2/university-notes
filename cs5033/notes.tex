@@ -373,8 +373,387 @@ the components
 \end{itemize}
 
 \section{Lifecycle and Process}
+\subsection{Architecture business cycle}
+The architecture business cycle (ABC) is a cycle of influences between the
+architecture of a system, and the technical, business and social aspects
+of the system. This is typically captured in the functional and
+non-functional requirements, but is also captured in its development
+and target operating environments.
+
+There are a number of business and social influences on a system outside
+of the technical aspects:
+\begin{itemize}
+\item Stakeholders: - customers, users, developers, managers, ...
+\item Developing organisation - Concerns for short term and long term
+  business goals and organisational structure
+\item Architects - The skill and experience of the architect will
+  have a large influence on the system's architecture
+\item Technical environment - The standard practices or techniques in
+  place at a business can affect the technology or process choices
+  when designing and implementing a software architecture
+\end{itemize}
+
+\subsection{Software development process}
+The typical software development process involves
+\begin{itemize}
+\item Create business case
+\item Understand requirements
+\item Create or select architecture
+\item Document and communicate architecture
+\item Analyse or evaluate architecture
+\item Implement system according to architecture
+\item Check system conforms to the architecture
+\item Maintain the system according to architectural constraints
+\end{itemize}
+
+To derive the architecture there are a few simple methods:
+Reuse an existing architecture, develop following a method
+or develop using intuition.
+
+\textbf{Architecture reuse} \\
+Take an architecture specification from an existing system
+or literature. In theory, this is cheaper and quicker, but may
+run into issues with portability and the taken architecture
+not fitting the requirements or development environment.
+
+\textbf{Develop by method} \\
+A standard, systematic method could be used to develop a new
+architecture. Methods typically involve deriving the architecture
+from requirements through a series of transformations.
+This is likely to be better documented, in terms
+of both the architecture and the method. The choice of method
+can be critical, as the wrong method can lead to a bad start
+or incorrect priorities.
+
+\textbf{Develop by intuition} \\
+This is an interesting case where an experienced architect may
+simply develop by their intuition without any methods or reuse.
+With could lead to some innovative architectures, but comes at
+an increased risk. It can also be potentially more optimal at a
+higher cost. Evaluation on architectures developed by intuition
+is critical to ensure the meet the requirements fully.
+
+\subsection{Issues in architecting}
+There are a number of issues that arise when developing a software
+architecture. These can be split into the following categories
+\begin{itemize}
+\item \textbf{Decomposition} \\
+  How are the sets of components/connectors and configurations
+  derived and what constraints are imposed on these architecture
+  elements? Decomposition goes down to the level of interactions
+  and the degree of concurrency, but one must be mindful of what
+  is a suitable level of granularity for decomposition, especially
+  when only considering the architecture and not the implementation
+\item \textbf{Composition} \\
+  How do we determine what elements are needed and where do we find the
+  required elements? Composition deals with what elements are needed,
+  for example how to heterogeneity (different elements) and how do we
+  know if the elements present are enough to achieve the target system.
+\end{itemize}
+
+There are also two approaches to tackle issues in development:
+top-down or bottom up. Realistically a combination of both
+approaches is used. An example of an architecture design method
+is \textbf{attribute-driven design}. In this approach, the development
+of the architecture is driven by quality attributes (performance,
+reliability, safety, etc.). This is a recursive decomposition
+method targeted at initial design. The idea is to identify tactics to
+achieve the quality requirements.
+\imagefig{0.6\textwidth}{imgs/attribute-driven.png}{Workflow for an
+  attribute driven design of an architecture.}
+
+Another example is with architecture definition activities
+\begin{enumerate}
+\item Consolidate inputs
+\item Identify scenarios
+\item Identify relevant architectural styles
+\item Produce candidate architecture
+\item Explore architecture options
+\item Evaluation architecture with stakeholders
+\item If not acceptable
+  \begin{itemize}
+  \item Rework architecture / revisit requirements
+  \item Return to step 5
+  \end{itemize}
+\end{enumerate}
 
 \section{Architecture views}
+It is important that software architecture is documented in order
+for it to be shared and understood for all its benefits to be realised.
+Different stakeholders may be interested in different aspects of the
+architecture, and a complicated architecture would require documentation
+in different aspects for these stakeholders.
+
+The main issue with software architecture documentation is the lack
+of a universally accepted standard. Due to the complexity of architectures,
+multiple views and levels of detail are often required. The different views
+must remain consistency through the evolution of the architecture and remain
+consistent among the different views.
+
+\subsection{Concepts}
+Even though documentation can exist, the question then becomes what should
+be documented. Documentation that is too detailed will incur a high cost
+for both the documentation process and the process for updating
+it. Factors for choosing what to document include
+\begin{itemize}
+\item Level of detail
+\item Longevity of the system
+\item Needs of the stakeholders
+\end{itemize}
+
+The IEEE 1471 lists concepts which are important for documentation:
+\begin{itemize}
+\item Stakeholder - The person or organisation with an interest
+  in the system
+\item Concern - The interest of the stakeholder
+\item View - Part of an architecture description
+\item Viewpoint - Definition of a view (contents, models to use)
+\item Model - Piece of structured information in a particular
+  representation/language
+\item Rationale - Explanation/motivation for the architecture description
+\item Library viewpoint - Viewpoint that is to be used in
+  different architecture descriptions
+\end{itemize}
+
+\begin{definition}
+  A view is a representation of a coherent set of architecture
+  elements written by and for stakeholders of the system
+\end{definition}
+A view is typically encapsulated by a set of design decisions
+related by a common concern (or set of concerns). The idea of views
+is to support different goals and uses. For example a view may be
+captured in one or more models, which may be used in multiple views.
+
+A viewpoint defines the perspective from which a view is taken.
+In other words, a view is \textit{an instance of a viewpoint}
+for a specific system. The important aspect of viewpoints is
+that they taken into account which stakeholder's perspective when
+looking at a view.
+\subsubsection{Defining a viewpoint}
+According to IEEE 1471, a viewpoint can be defined by the following
+elements
+\begin{itemize}
+\item Name
+\item Stakeholders
+\item Concerns
+\item Language, modelling technique, analytical methods
+\item Source (reference)
+\item Consistency/completeness checks
+\item Evaluation/analysis techniques
+\item Heuristics, tips for creating associated views
+\end{itemize}
+
+Example of viewpoints include logical, physical, deployment (
+mapping of logical entities to physical entities), concurrency
+and behaviour.
+
+\subsection{4+1 viewpoints}
+One example of multiple viewpoints is the 4+1 viewpoints by Kruchten.
+Here the viewpoints are split into four different viewpoints:
+\begin{itemize}
+\item \textbf{Logical view} - The conceptual view which includes the
+  structurally significant elements of the architecture such as the
+  components and their interactions. Also known as a component and
+  connector view
+\item \textbf{Physical view} - The view that shows how logical
+  structure is mapping onto application hardware
+\item \textbf{Development view} - Shows the organisation of
+  software in the development environment
+\item \textbf{Process view} - Describes the concurrency and coordination
+  elements of an architecture
+\end{itemize}
+
+\imagefig{0.6\textwidth}{imgs/4+1.png}{Diagram of the 4+1 viewpoints.}
+
+The use cases (the +1) is used to relate all the views. It captures the
+requirements for the architecture. It can be related to one or more
+views and can be used to test and validate the architecture.
+
+\subsection{C4 model}
+
+
+\subsection{Other viewpoints}
+There are many other viewpoints, for example
+\begin{itemize}
+\item Module view - A system structure as a set of implementation units
+  with code modules, classes, packages and subsystems in the design
+\item Component and connector view - A system structure as a set of
+  units of run-time behaviour and interaction
+\item Allocation view - A system structure in relation to development
+  and execution environment
+\end{itemize}
+
+\section{Notations}
+Notation is important to have well-defined and understood semantics.
+There are different kinds of notations in which software
+architecture may be expressed. 
+\subsection{General purpose}
+General purpose notations can be used in most circumstances, but do not
+provide details in their notation. Example of general purpose notations
+include UML and SysML.
+
+\subsection{Architectural description language}
+An architectural description language is one that can be used to describe
+the architecture of a software system in terms of its elements and the
+relationships and constraints among them. They can either be in graphical
+or textual form. There are a great variety of existing ADLs that
+support many different cases, such as domain-specific, static, dynamic
+and interaction paradigms.
+
+Examples of ADLs include
+\begin{itemize}
+\item Acme
+\item Aesop
+\item ArchWare
+\item CommUnity
+\item Darwin
+\item Koala
+\item Rapide
+\item ...
+\end{itemize}
+
+\textbf{Darwin}
+Darwin is a general purpose ADL for structures of distributed systems.
+
+
+\section{Software architecture evaluation}
+It is important to evaluate architectures. Architectural decisions are
+important for multiple reasons:
+\begin{itemize}
+\item Blueprint for development and maintenance
+\item Clarification and prioritisation of requirements
+\item Development team structure and management decisions
+\item Understanding, learning and sharing
+\end{itemize}
+An evaluation of the architecture helps deal with these decisions.
+Further, it is cheaper to evaluate architectures if it is done
+earlier in the lifecycle, as it minimises the cost of correcting
+errors and unnecessary effort later. It is also easier to evaluate
+the architecture rather than the implementation, as it is a higher
+level model with only the features of interest. As such, architecture
+evaluation provides benefits of increased quality, controlled cost
+and reduction of risks.
+
+\subsection{Ws}
+
+\subsubsection{When?}
+Often, it is best to evaluate an architecture as early as possible
+and to incorporate the evaluation in the overall plan for the system.
+It is also a good idea to evaluate regularly, just like unit testing
+software. There is no bad time to evaluate an architecture, as even
+an evaluation too late is useful to identify and resolve problems
+that have been arising. For example, legacy systems require evaluation
+to incorporate into new systems or to deal with maintenance issues.
+
+\subsubsection{Who?}
+Typically the development team itself will carry out the evaluation, but
+it can also be a different team within the same organisation or an
+independent/external reviewer.
+
+The main issues that can arise from who is involved with the evaluation
+is bias, either from the same development team or a rival
+development team. Moreover, it is important for reviews to have a
+good amount of domain knowledge and experience.
+
+\subsubsection{What?}
+\begin{itemize}
+\item Architecture process
+\item Architecture description
+\item Overall issues
+\item Specific concerns
+\item Future changes and impact
+\end{itemize}
+
+\subsubsection{How?}
+\begin{itemize}
+\item Questioning techniques - Generate a discussion based on
+  qualitative questions, questionnaires, checklists and scenarios
+\item Measuring techniques - Provide quantitative answers to
+  specific questions, metrics, simulation, prototypes and formal
+  analysis
+\end{itemize}
+
+
+\subsection{Dimensions of evaluation}
+\begin{itemize}
+\item Goals - Completeness, consistency, compatibility,
+  correctness
+\item Scope
+  \begin{itemize}
+  \item Component and connector
+  \item Subsystem and system level
+  \item Data exchange
+  \item Comparison of architectures
+  \end{itemize}
+\item Concerns - Structure, behaviour, interaction,
+  non-functional
+\item Models - Informal, semi-formal, formal
+\item Type - static, dynamic and scenario-based
+\item Automation level - manual, partially automated and
+  fully automated
+\item Stakeholders
+\end{itemize}
+
+\subsubsection{Characteristics of successful evaluation}
+\begin{itemize}
+\item Clear set of goals and requirements
+\item Well-defined scope (small number of goals)
+\item Cost-effectiveness
+\item Availability of required personnel and architectural models
+\item Competent evaluation team
+\item Well-defined and realistic expectations
+\end{itemize}
+
+\subsection{Architecture Tradeoff Analysis Method (ATAM)}
+ATAM is a scenario-based evaluation method that focuses on tradeoffs
+between quality goals. It requires the participation of three
+different groups:
+\begin{enumerate}
+\item The evaluation team (external to the project)
+\item Project decision makers (including the architect)
+\item Architecture stakeholders (developers, testers, users)
+\end{enumerate}
+
+The ATAM process involves 2 phases with a few steps:
+\begin{itemize}
+\item Phase 1 (groups 1 and 2)
+  \begin{itemize}
+  \item Present the ATAM
+  \item Present business drivers
+  \item Present architecture
+  \item Identify architectural approaches and patterns used
+  \item Generate quality attribute utility tree
+  \item Analyse architectural approaches
+  \end{itemize}
+\item Phase 2 (groups 1, 2 and 3)
+  \begin{itemize}
+  \item Brainstorm and prioritise scenarios
+  \item Analyse architectural approaches
+  \item Present results
+  \end{itemize}
+\end{itemize}
+
+%\imagefig{}{}{} ATAM utility tree
+
+ATAM also has a set of deliverables at the end of the process.
+\begin{itemize}
+\item Concise presentation of architecture
+\item Business goals
+\item Quality requirements in terms of scenarios
+\item Mapping of architectural decisions to quality requirements
+\item A set of identified sensitivity and tradeoff points
+\item A set of identified risks and overarching risk themes
+\end{itemize}
+
+\subsection{Metrics}
+\begin{itemize}
+\item Size of the architecture
+\item Connectivity and complexity of architecture
+\item Coupling and cohesion among architectural elements
+\item Changes made to architecture
+\end{itemize}
+
+
 
 %\printbibliography
 
