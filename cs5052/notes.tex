@@ -1,0 +1,947 @@
+\documentclass{sty/SizheArticle}
+
+\title{Revision notes}
+\author{140011146}
+\addbibresource{references.bib}
+\usepackage{sty/sizhetitle}
+\usepackage{amsthm}
+\usepackage{multicol}
+
+\newtheorem{definition}{Definition}
+
+\begin{document}
+
+% Paper template %
+
+%\subsubsection{Key points}
+% What are the motivations behind the paper? Why was it written?
+% Any related work that came before and after the paper?
+% What problem does it solve?
+
+%\subsubsection{Specifics/details}
+% How does it solve the problem
+% Architectural overview and components of the solution
+% Interaction between components
+
+%\subsubsection{Problems and evaluation}
+% Problems with the paper itself - weaknesses, assumptions and drawbacks
+% Problems with the solution, what scenarios does it not apply to?
+
+\maketitlepage{CS5052 Data Intensive Systems}{Adam Barker}
+\tableofcontents
+
+\section{Parallel Processing}
+\subsection{MapReduce}
+MapReduce: Simplified Data Processing on Large Clusters
+\url{https://static.googleusercontent.com/media/research.google.com/en//archive/mapreduce-osdi04.pdf}
+
+\subsubsection{Key points}
+% What are the motivations behind the paper? Why was it written?
+Traditional systems before MapReduce tended to use large centralised servers
+for storing and retrieving data. Furthermore, various types of computation
+on large data required special-purpose implementations, including how to
+distribute the computation in parallel, which cost a lot of engineering effort.
+
+Problems:
+\begin{enumerate}
+\item Large amount of data
+\item Parallelise the computation, distribute the data and handle failures
+\item \underline{Centralised systems created too much of a bottleneck} when
+processing multiple files simultaneously
+\end{enumerate}
+
+MapReduce solves these problems by providing a programming interface that
+handles the complexity, distribution and fault tolerance while allowing
+an engineering to write in a generic manner with the \textbf{map} and
+\textbf{reduce} primitives.
+
+% Any related work that came before and after the paper?
+\textbf{Related work} \\
+Systems before MapReduuce such as the BSP pattern or some MPI primitives
+were either implemented on a smaller scale or parallelism or do not
+handle failures automatically. 
+
+Since the MapReduce paper was released, an open source version - Hadoop -
+has been used by companies around the world for big data analytics. It has
+since grown into a large framework for processing \textit{and} storing
+massive datasets, using MapReduce as the programming model to process the
+data stored in Hadoop.
+
+\textbf{Solution}
+\begin{itemize}
+\item Interface that enables automatic parallelisation and distribution 
+of large-scale computations.
+\item Achieve high performance on large clusters of commodity hardware
+\item Frequent disk I/O and data replication limits its usage in
+iterative algorithm and interactive data queries
+\end{itemize}
+
+% What problem does it solve?
+
+\subsubsection{Specifics/details}
+% How does it solve the problem
+\textbf{Programming model} \\
+MapReduce takes a set of \textbf{input key/value pairs}, and produces a set
+of \textbf{output key/value pairs}. A user expresses the computation as two
+functions: \textbf{Map} and \textbf{Reduce}.
+\begin{itemize}
+\item Map - Takes an input pair and produces a set of \textbf{intermediate}
+key/value pairs. The library then groups together intermediate values
+associated with the same intermediate key and passes them to the reduce function
+\item Reduce - Accepts an intermediate key and a set of values for that key.
+It merges together the values to form a smaller set of values (typically zero
+or one output value per Reduce invocation).
+\end{itemize}
+
+\imagefig{0.9\textwidth}{imgs/mr-example.png}{MapReduce example counting
+occurrences of words.}
+
+\textbf{Architectural overview and components}
+MapReduce follows a sequence with master and worker nodes to achieve its
+operation. The master must make $O(M + R)$ scheduling decisions and keep
+$O(M + R)$ state in memory.
+\begin{enumerate}
+\item Data is separated into $M$ splits, decided by the user
+\item A machine is chosen as the \textbf{Master}. The master allocates the $M$
+splits to selected machines (Map workers)
+\item Map workers periodically write their intermediate pairs to $R$ number
+of regions on local disk and return their location to the master
+\item The master tells Reduce workers the location, which can start to read
+$R$ splits while the Map workers are still working
+\item When all intermediate data is read by the Reduce workers, it is
+sorted by Key and the Reduce functions are run
+\item The output of the Reduce machines are appended to the output file
+\end{enumerate}
+
+To handle fault tolerance, the master periodically pings every worker. After
+some time, if no reply is received, the master marks the worker as failed.
+Assigned work is reset and picked up by other workers, even if the work is
+completed because it is written to local disk.
+
+MapReduce also uses a \textbf{backup} mechanic to deal with stragglers. It
+assigns another machine on the in-progress tasks as a backup in case the
+original machine takes too long to finish the work.
+% Interaction between components
+
+\subsubsection{Problems and evaluation}
+% Problems with the paper itself - weaknesses, assumptions and drawbacks
+\textbf{Advantages}
+\begin{itemize}
+\item Simple and easy to use via the Map and Reduce interface
+\item Flexible - No dependency on data model and schema
+\item Independent of storage - Works independent of underlying storage layers
+\item High fault tolerance
+\item High scalability
+\end{itemize}
+
+\textbf{Disadvantages}
+\begin{itemize}
+\item No high-level language - Does not support high-level languages like SQL in
+databases or any query optimisation techniques
+\item No schema and index
+\item A single fixed dataflow - More complex algorithms which cannot fit into
+the Map and Reduce functions are hard to implement
+\item Low efficiency - Not optimised for I/O efficiency. Transition to the next
+stage cannot be made until all tasks of the current stage are finished
+\end{itemize}
+
+% Problems with the solution, what scenarios does it not apply to?
+\subsection{Resilient Distributed Datasets (RDD)}
+Resilient Distributed Datasets is a distributed memory abstraction that lets
+programmers perform in-memory computations on large clusters \textit{with}
+fault tolerance. One major disadvantage with MapReduce is the need to write
+to local disk, which is significantly slower than keeping data in memory.
+However, fault tolerance is difficult when keeping all the data in memory.
+
+\imagefig{0.9\textwidth}{imgs/mr-vs-rdd.png}{Benefits and concerns with MapReduce.}
+
+\subsubsection{Key points}
+% What are the motivations behind the paper? Why was it written?
+Most frameworks at this time lacked abstractions for leveraging distributed
+memory, which makes them inefficient for applications that \textit{reuse}
+intermediate results across multiple computations. Data reuse is common
+in iterative applications such as machine learning.
+% Any related work that came before and after the paper?
+% What problem does it solve?
+
+The key to RDD is to enable efficient data reuse in a broad range of applications
+and to be fault-tolerant, allowing users to
+\begin{itemize}
+\item Persist intermediate results
+\item Control partitioning to optimise data placement
+\item Allow a rich set of operators for manipulation
+\end{itemize}
+
+RDD provides the following features:
+\begin{itemize}
+\item \textbf{Resilient} - Fault-tolerance using the RDD lineage graph to
+recompute missing or damaged partitions due to node failures
+\item \textbf{Distributed} - Data lived on multiple nodes in a cluster
+\item \textbf{Dataset} - Collection of partitioned data with primitive
+values, tuples or other objects
+\end{itemize}
+
+It is also advertised with the following traits:
+\begin{itemize}
+\item \textbf{In-memory} - Data is stored in memory as much and as long
+as possible
+\item \textbf{Immutable} - Data is read-only and does not change once created,
+only being transformed into new RDDs
+\item \textbf{Lazy evaluation} - The data is not available or transformed until
+an action is executed that triggers the execution
+\item \textbf{Cacheable} - Data can be held in a persistent storage, either in
+memory (by default) or on disk
+\item \textbf{Parallel} - Data is processed in parallel
+\item \textbf{Typed} - RDD records have types
+\item \textbf{Partitioned} - Records are partitioned (split into logical
+partitions) and distributed across nodes in a cluster
+\item \textbf{Location-stickiness} - Placement preferences can be manually
+defined to compute partitions as close to the records as possible.
+\end{itemize}
+
+RDD solves the challenge of efficient fault tolerance by logging the data
+transformation used to build the dataset, rather than the data itself. This
+is called the \textbf{lineage} and it provides enough data to recover
+a lost partition, by showing how it was derived. 
+
+\imagefig{0.9\textwidth}{imgs/rdd.jpg}{RDD partitions.}
+
+\subsubsection{Specifics/details}
+% How does it solve the problem
+\textbf{Partitions} are RDDs way of dealing with parallelism and distributing
+the data. Users manually control the number of partitions and support two
+kinds of operations:
+\begin{itemize}
+\item \textbf{transformations} - lazy operations that return another RDD
+\item \textbf{actions} - operations that trigger computation  and return values
+\end{itemize}
+
+\imagefig{0.6\textwidth}{imgs/rdd-dependencies.png}{Examples of narrow and wide
+dependencies.}
+
+\imagefig{0.6\textwidth}{imgs/rdd-spark.png}{Example spark job in stages. Each
+box is a separate RDD}
+
+
+% Architectural overview and components of the solution
+% Interaction between components
+
+\subsubsection{Problems and evaluation}
+\textbf{Advantages}
+\begin{itemize}
+\item Not affected by network bandwidth
+\item Straightforward and simple programming interface
+\item Allows manual control
+\end{itemize}
+
+\textbf{Disadvantages}
+\begin{itemize}
+\item Not applicable to asynchronous applications
+\item Slow for non-JVM languages
+\end{itemize}
+% Problems with the paper itself - weaknesses, assumptions and drawbacks
+% Problems with the solution, what scenarios does it not apply to?
+\subsection{Google File System (GFS)}
+The Google File System is a scalable distributed file system for large
+distributed data-intensive applications. It provides fault tolerance while
+running on inexpensive commodity hardware and delivers good performance to a
+large number of clients.
+
+\subsubsection{Key points}
+The key ideas behind GFS are:
+\begin{itemize}
+\item Constant monitoring and error detection
+\item Ability to withstand massive file sizes
+\item Performance optimisation through appending
+\item Allow multiple clients to concurrently append to a file without
+extra synchronisation
+\end{itemize}
+
+% What are the motivations behind the paper? Why was it written?
+GFS was designed to meet the growing demands of Google's processing needs.
+It is designed with the following aspects in mind:
+\begin{itemize}
+\item Component failures are the norm rather than the exception
+\item Files are huge by traditional standards
+\item Most files are mutated by appending rather than overwriting existing data
+\end{itemize}
+The problem arises from the need to efficiently store and access large files
+in a distributed manner, so GFS optimises for the particular use cases that
+Google needs, in particular the efficient appending.
+
+Assumptions
+\begin{itemize}
+\item Modest amount of large files (multi-GB files should be managed efficiently),
+which means not optimised for smaller files
+\item Small writes at an arbitrary offset are not optimised
+\item Essential to have atomicity with minimal synchronisation when appending
+\item High bandwidth is more important than low latency
+\end{itemize}
+% Any related work that came before and after the paper?
+% What problem does it solve?
+
+\subsubsection{Specifics/details}
+
+\imagefig{0.9\textwidth}{imgs/gfs-architecture.png}{GFS architecture}
+The GFS architecture consists of a single \textbf{master} with multiple
+\textbf{chunkservers}, accessed by multiple clients.
+\begin{itemize}
+\item Files are divided into fixed-sized \textbf{chunks}
+\item Chunkservers store chunks on local disks
+\item Chunks are replicated on multiple chunkservers for reliability
+\end{itemize}
+The master maintains the file system metadata, which includes the namespace,
+access control information, mapping from files to chunks and the location
+of chunks. A \textbf{heartbeat} is used to communicate between the master
+and chunkserver to collect state and instructions.
+
+\textbf{Chunk size} \\
+The chunk size is fixed and can be changed, though it defaults to 64MB. A
+large chunk size offers several advantages:
+\begin{itemize}
+\item Reduces a clients' need to interact with the master because reads and
+writes to the same chunk require only one request to the master
+\item Reduces network overhead as more operations are performed on the
+same chunk
+\item Reduces the size of the metadata sorted on the master (less chunks = less
+metadata)
+\end{itemize}
+
+\textbf{Fault tolerance} \\
+\begin{itemize}
+\item Chunks are replicated on different racks, stale replicas are detected and
+garbage collected
+\item The master state is also replicated for reliability
+\item Checksums detect corrupt data
+\end{itemize}
+% How does it solve the problem
+% Architectural overview and components of the solution
+% Interaction between components
+
+\subsubsection{Problems and evaluation}
+The drawbacks to GFS are inherent in its assumptions and optimisations.
+For example, it is optimised for appending to files, so random writes are
+inefficient. Another example is small files lead to inefficient storage
+due to large chunk sizes, and small chunk sizes are inefficient for
+metadata purposes.
+% Problems with the paper itself - weaknesses, assumptions and drawbacks
+% Problems with the solution, what scenarios does it not apply to?
+
+
+
+\section{Storage and databases}
+\subsection{CAP and BASE}
+\subsubsection{ACID}
+ACID databases are the old traditional databases which adhere to being
+consistent and reliable. ACID stands for:
+\begin{itemize}
+\item \textbf{Atomicity} - Atomic operations to ensure operations complete
+and are uninterrupted by other operations
+\item \textbf{Consistency} - Consistency here means that a transaction
+preserves all the database rules, such as unique keys. Importantly, ACID's
+consistency \textit{cannot} be maintained across partitions.
+\item \textbf{Isolation} - Isolation ensures transactions cannot interfere or
+see each other
+\item \textbf{Durability} - Once a transaction is committed, it can never
+be lost. This means transactions are not reversible under any circumstance.
+\end{itemize}
+ACID becomes complex to manage when databases have to be scaled horizontally.
+A 2PC protocol is used often.
+\begin{enumerate}
+\item Commit-request phase - Each database involved precommits the operation
+to indicate whether the commit is possible. If all are in agreement, move to
+phase 2. Otherwise rollback to the previous state.
+\item Commit phase
+\end{enumerate}
+
+\subsubsection{BASE}
+BASE is an alternative to ACID that goes to the opposite end of the spectrum,
+like acids and bases in chemistry.
+It stands for:
+\begin{itemize}
+\item \textbf{Basically Available} - The system is always responsive, but there
+is a possible loss of time latency, or loss of functionality
+\item \textbf{Soft state} - State of the system may change over time, even
+without input due to the eventually consistent model
+\item \textbf{Eventually consistent} - The system will become consistent over
+time, given no new inputs are received
+\end{itemize}
+In fact, BASE is a type of system under the CAP theorem, that trades-off
+consistency for high-availability and partition tolerance.
+
+\subsubsection{CAP theorem}
+The CAP theorem states that any networked shared-data system can have at
+most two of three desirable properties:
+\begin{enumerate}
+\item Consistency (C) - A guarantee that every node in a distributed cluster
+returns the same, most recent, successful write
+\item High availability (A) - Every non-failing node returns a response
+for all read and write requests in a reasonable amount of time
+\item Partition tolerance (P) - The ability of a system to continue to
+process data, even if a network partition causes communication errors
+between subsystems.
+\end{enumerate}
+The idea behind CAP is the tradeoffs involved in a networked data system. If
+partitions exist, there are two options:
+\begin{itemize}
+\item Allow only one side to update, sacrificing consistency for availability
+\item Have the side that receives the response act as though it is unavailable,
+preserving consistency
+\end{itemize}
+This is somewhat misleading as it oversimplifies the tension among the properties.
+If partitions are \textit{rare}, there is no need to choose between
+consistency and availability if no partition currently exists, as long as
+they are tolerated.
+
+In other words, a system should allow consistency and availability most of the
+time until partitions occur. Then a strategy is needed to detect and account
+for partitions to preserve consistency and availability. There are three
+main steps to detect and recover from partitions:
+\begin{enumerate}
+\item Detect the start of a partition
+\item Enter an explicit partition mode with limitations
+\item Initiate partition recovery
+\end{enumerate}
+
+\imagefig{0.9\textwidth}{imgs/cap-partition.png}{Enter partition mode and
+partition recovery when one is detected}
+
+Evidentally, some operations cannot proceed while in partition mode, so
+designers need to decide which operations can and cannot proceed. This
+will limit consistency and availability for some time, but can be
+somewhat mitigated by letting the user know. A \textbf{history} of
+operations can be logged and executed after partition recovery to
+maintain consistency.
+\subsection{Dynamo}
+Dynamo is a highly available key-value store that sacrifices consistency under
+certain failure scenarios to maintain high availability. It makes use of
+extensive object versioning and application-assisted conflict resolution
+while providing an interface for developers to use.
+
+\subsubsection{Key points}
+% What are the motivations behind the paper? Why was it written?
+One of Amazon's biggest challenges is reliability at a massive scale. For their
+services, availability is massively important for both partner and customer
+services. Additionally, scalability is important for continuous growth.
+
+Before Dynamo, relation management databases (RMDBs) were the most popular
+solution. However, many of a RMDBs' features were not being taken
+advantage of, and costs are high to run these databases
+\begin{itemize}
+\item 70\% of database use is key-value only
+\item 90\% of database use did not need table joins
+\end{itemize}
+
+% Any related work that came before and after the paper?
+% What problem does it solve?
+Dynamo is an example of a system Amazon designed with high availability and
+scalability in mind, in a distributed data store. S3 (Amazon Simple Storage
+System) is another example of such a distributed store. Dynamo focuses on
+the following features:
+\begin{itemize}
+\item Treating failure handing as the normal case
+\item Tight control over the trade-off between availability, consistency and
+performance
+\item Provide a simple interface to handle services that only need primary-key
+access
+\end{itemize}
+This leads to the following key design aspects of Dynamo:
+\begin{itemize}
+\item Consistent hashing with virtual nodes provides
+	\begin{itemize}
+	\item Evenly distributed and balanced work-loads across heterogeneous
+	hardware
+	\item Flexibility to scale up and down
+	\end{itemize}
+\item Trade-offs between reliability and consistency enabled by
+    \begin{itemize}
+    \item Inconsistency rules for individual applications
+    \item Quorum systems for conflict resolution
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Specifics/details}
+\textbf{Consistent hashing} \\
+Dynamo uses \textbf{consistent hashing} to distribute the load of data across
+multiple storage hosts by assigning each node to a random value in the ring
+that consistent hashing produces.
+\begin{itemize}
+\item Virtual nodes are interspersed across equal partitions
+\item Because the hashing is uniformly distributed, each node is responsible
+for an equal number of data items
+\item When nodes are added or removed, the hash keys are recalculated
+\end{itemize}
+\imagefig{1\textwidth}{imgs/consistent-hashing.png}{Consistent hashing over
+the data when nodes are added/removed.}
+
+\textbf{Data versioning} \\
+Verioning is required to deal with issues where different versions of the data
+exist.
+\begin{itemize}
+\item Updates are propagated to all replicas asynchronously
+\item A \textbf{vector clock} is associated with each object version, which can be
+compared to determine version order. A vector clock is a list of (node,counter)
+tuples.
+\end{itemize}
+
+\textbf{Quorum-likeness} \\
+A quorum is a minimum number of online virtual nodes
+\begin{itemize}
+\item Read and write operations are driven by two parameters: $R$, the minimum
+number of replica nodes to read and $W$, the minimum number of replica nodes
+to write
+\item $R + W > N$ yields a \textit{quorum-like} system
+\item Latency is dictated by the slowest $R$ or $W$ replicas 
+\end{itemize}
+Dynamo uses a \textbf{sloppy quorum} which compromises between consistency
+and availability:
+\begin{itemize}
+\item Application sets $R$ or $W$ to be very low to ensure constant
+availability
+\item Replicas can be stored on healthy nodes downstream in the ring, with
+metadata specifying that the replica should be sent to the intended recipient
+later
+\end{itemize}
+Replicas are then synchronised using a \textbf{Merkle tree}, which is a hash
+tree where the leaves are the hashed of the values of individual keys. The
+disadvantage is that many key ranges range when a node joins or leaves and the
+trees have to be recalculated.
+% How does it solve the problem
+% Architectural overview and components of the solution
+% Interaction between components
+
+\subsubsection{Problems and evaluation}
+\begin{itemize}
+\item \textbf{Requires scale} - Many of the trade-offs made by the system
+do not make sense when operating at a smaller scale. For example, sloppy
+quorum assumes outages are very short
+\item \textbf{Limited queries} - Difficult to add new types of query, as only
+key/value pairs are allowed in Dynamo
+\item \textbf{Not always consistent} - Cannot be used in cases where
+consistency is important, such as banking applications.
+\end{itemize}
+% Problems with the paper itself - weaknesses, assumptions and drawbacks
+% Problems with the solution, what scenarios does it not apply to?
+
+
+
+\section{Graph and stream processing}
+\subsection{Pregel}
+Pregel is a computational model suited for processing graphs and social
+networks. Programs are expressed as a sequence of iterations, in each of which
+a vertex can 
+\begin{itemize}
+\item receive messages sent in the previous iteration
+\item send messages to other vertices
+\item modify its own state and that of its outgoing edges
+\item mutate the graph topology
+\end{itemize}
+The model was designed for efficient, scalable and fault-tolerant implementation
+on clusters of commodity computers.
+
+\subsubsection{Key points}
+% What are the motivations behind the paper? Why was it written?
+Graphs are an efficient way to represent information on the internet,
+such as web page links and social networks. It can also be used for processing
+the shortest path or cluster of nodes in these networks.
+
+\imagefig{0.9\textwidth}{imgs/pregel-existing.png}{Existing solutions all
+underperform in some desirable attribute.}
+
+Pregel uses a Bulk Synchronous Parallelism (BSP) model where each thread carries
+out operations in a series of supersteps. Results are exchanged at the end
+of each superstep. In the Pregel implementation of BSP:
+\begin{itemize}
+\item Input: vertices and edges forming a graph
+\item Output: a value for each vertex
+\item Instead of threads, each unit of execution is a vertex in the graph.
+Vertices can:
+	\begin{itemize}
+	\item Send messages to other vertices
+	\item Alter their own value
+	\item Alter the value of outgoing edges
+	\item Request changes to the topology of the graph
+	\end{itemize}
+\item In the exchange step, messages are distributed to target vertices
+and topology changes are resolved. 
+\end{itemize}
+
+% Any related work that came before and after the paper?
+% What problem does it solve?
+Pregel is designed for sparse graphs where communication occurs mainly over
+the edges. Therefore it has lower performance when most vertices
+continuously send messages to most other vertices (large synchronise step).
+
+\subsubsection{Specifics/details}
+\textbf{Combiners} \\
+\begin{itemize}
+\item Problem: Sending many messages can incur a large overhead
+\item Solution: Combiners are a user defined way to combining multiple messages
+to the same vertex
+\item Example: Combining integer messages by adding them
+\end{itemize}
+
+\textbf{Aggregators} \\
+\begin{itemize}
+\item Problem: It is difficult to carry out computations involving the whole graph
+\item Solution: Aggregators combine information from each vertex and makes
+it available in the next superstep
+\item Example: Counting total edges in the graph
+\end{itemize}
+
+\textbf{Implementation} \\
+\begin{itemize}
+\item The master assigns partitions of the graph to worker nodes
+\item Workers compute on the vertices and edges they are assigned to
+\item Messages are exchanged between workers during synchronisation
+\item Checkpointing is used for fault tolerance if workers fail. Partitions
+are re-assigned and work starts from the beginning of the superstep of the last
+checkpoint
+\end{itemize}
+% How does it solve the problem
+% Architectural overview and components of the solution
+% Interaction between components
+
+%\subsubsection{Problems and evaluation}
+% Problems with the paper itself - weaknesses, assumptions and drawbacks
+% Problems with the solution, what scenarios does it not apply to?
+\subsection{Borg}
+Borg is a cluster management system that runs hundreds and thousands of jobs
+from different applications across a number of cluster, each with tens of
+thousands of machines.
+
+\subsubsection{Key points}
+% What are the motivations behind the paper? Why was it written?
+Borg addresses how to \textit{deploy} the various cloud applications
+onto the actual clusters and manage those clusters. It also deals with
+resource allocation and tracking of the applications while they are running.
+
+Borg provides three main benefits to users:
+\begin{enumerate}
+\item Hides the resource management details of a cluster
+\item Operates with high reliability and availability
+\item Enables execution of workloads across tens of thousands of machines
+effectively
+\end{enumerate}
+Users can simply operate on jobs by issuing remote procedure calls.
+
+\textbf{Related work} \\
+\begin{itemize}
+\item Apache Mesos - a cluster management system that decouples resource
+management from resource placement
+\item YARN - each application has a resource manager that negotiates with
+the central master node
+\end{itemize}
+% Any related work that came before and after the paper?
+% What problem does it solve?
+
+\subsubsection{Specifics/details}
+% How does it solve the problem
+\textbf{Architecture} \\
+\imagefig{0.9\textwidth}{imgs/borg-infrastructure.png}{Borg infrastructure and
+how it is split between buildings, clusters and cells.}
+
+The Borg architecture is split between a \textbf{Borgmaster} and \textbf{Borglets}.
+Each Borgmaster is associated with one cell.
+
+\imagefig{0.5\textwidth}{imgs/borg-architecture.png}{High-level Borg architecture
+for each cell.}
+% Architectural overview and components of the solution
+% Interaction between components
+
+\textbf{Other details}
+\begin{itemize}
+\item Every job has a priority specified by the user
+\item \textbf{Quota} is used to decide which jobs to admit for scheduling. It
+is expressed as a vector of resources (CPU, RAM, etc.) and associated with a
+priority
+\item High-priority quota costs more
+\item Jobs are admitted only if they have sufficient quota
+\item Tasks contain a built-in HTTP server that publishes logging data and
+other performance metrics
+\end{itemize}
+
+\subsubsection{Problems and evaluation}
+% Problems with the paper itself - weaknesses, assumptions and drawbacks
+\textbf{What Borg does well}
+\begin{itemize}
+\item Allocation with priority and quotas provide a good mapping for 
+resource management
+\item Borg handles additional application tasks like auto-scaling
+\item It is a separation of master dependencies and can be seen as just a
+kernel for other services
+\end{itemize}
+
+\textbf{What Borg could do better}
+\begin{itemize}
+\item Jobs are limited in how they group tasks together
+\item One IP address per machine is difficult to manage
+\item Borg optimises more for large scale `power users'
+\end{itemize}
+% Problems with the solution, what scenarios does it not apply to?
+
+
+
+\section{Resource management}
+\subsection{Mesos}
+Mesos is a platform for sharing commodity clusters between multiple cluster
+computing frameworks. Sharing clusters helps improve utilisation
+and avoids data replication.
+
+\subsubsection{Key points}
+% What are the motivations behind the paper? Why was it written?
+Sharing cluster resources gives high utilisation and is cheaper for
+companies, but current solutions involve either a static partition or
+allocated VMs per framework. These solutions are not able to achieve high
+utilisation nor efficient data sharing.
+
+Mesos takes the approach of a \textbf{resource offer}
+\begin{itemize}
+\item Offers encapsulate a bundle of resources that a framework can allocate
+on a cluster node to run tasks
+\item Mesos decides \textit{how many} resources to offer each framework based
+on organisational policies
+\item Frameworks decide \textit{which} resources to accept and which tasks to
+run on them
+\end{itemize}
+
+% Any related work that came before and after the paper?
+% What problem does it solve?
+
+\subsubsection{Specifics/details}
+\textbf{Architecture}
+\imagefig{0.5\textwidth}{imgs/mesos-architecture.png}{Mesos architecture
+running the Hadoop and MPI frameworks}
+
+\textbf{Resource offer}
+\imagefig{0.5\textwidth}{imgs/mesos-resource-offer.png}{An example resource
+offer}
+% How does it solve the problem
+% Architectural overview and components of the solution
+% Interaction between components
+
+%\subsubsection{Problems and evaluation}
+% Problems with the paper itself - weaknesses, assumptions and drawbacks
+% Problems with the solution, what scenarios does it not apply to?
+
+\section{Scheduling}
+\subsection{Patterns in the Chaos}
+Patterns in the Chaos was a paper that studied the patterns of underlying
+performance variations in cloud provider systems. The goal of the paper was
+to be able to predict VM performance and it criticises much of previous
+cloud performance evaluation work.
+\begin{itemize}
+\item Existing papers do not make all parameters that impact reported results
+available
+\item Current papers do not compared their results to previous work, often
+starting from a clean state
+\item It is unclear to what extent previous work has been able to stand the
+test of time
+\end{itemize}
+
+\subsubsection{Hypotheses}
+15 hypotheses were formed related to the nature of performance predictability
+in the cloud.
+\begin{enumerate}
+\item \textbf{Performance varies between instances} - the performance of cloud
+instances using the same configuration tends to vary
+\item \textbf{CPU-Bound applications} - CPU-bound applications depends strongly
+on the served CPU model and tends to vary due to hardware heterogeneity
+\item \textbf{IO-Bound applications} - IO-bound applications depend strongly on
+the behaviour of other co-located tenants
+\item \textbf{Variability of IO-Bound applications} - the performance of IO-bound
+applications tends to vary within the same instance
+\item \textbf{Stability of CPU-bound applications} - the performance of CPU-bound
+applications tends \textit{not} to vary within the same instance
+\item \textbf{Variability of bursting instance types} - the performance of
+\textit{any} application using a bursting instance tends to vary within the
+same instance
+\item \textbf{Impact of time of day on performance} - performance of a cloud
+instance depends significantly on the time of the day
+\item \textbf{Impact of time of day on predictability} - predictability depends
+significantly on the time of the day
+\item \textbf{Impact of day of the week on performance} - performance of a cloud
+instance depends significantly on the day of the week
+\item \textbf{Impact of day of the week on predictability} - predictability
+depends significantly on the day of the week
+\item \textbf{Impact of region on performance}
+\item \textbf{Impact of region on predictability}
+\item \textbf{Diseconomies of scale of larger instance types} - the ratio of
+performance and costs for any application tends to decrease with increasing
+instance type costs
+\item \textbf{Stability of larger instance types} - the predictability of
+performance tends to increase with increasing instance type costs
+\item \textbf{Price of specialisation} - specialised instances tend to have a
+better ratio of performance and cost related to their specialisation and
+worse ratio otherwise
+\end{enumerate}
+
+
+\subsection{HotSpot}
+HotSpot is a system that dynamically selects and migrates applications
+on the spot markets of cloud providers. By using spot instances, the prices of
+running applications are cheaper and hopping onto different instances mitigates
+additional cost and the `risk' of running on the spot market.
+
+\subsubsection{Key points}
+The core concept behind HotSpot is \textbf{automated server hopping}. This
+consists of two main parts:
+\begin{itemize}
+\item Migrating to spot VMs
+\item Predicting prices of spot VMs
+\end{itemize}
+
+% What are the motivations behind the paper? Why was it written?
+% Any related work that came before and after the paper?
+% What problem does it solve?
+
+\subsubsection{Specifics/details}
+There are two metrics to measure to decide whether to migrate to a
+new VM:
+\begin{itemize}
+\item Cost-efficiency of VMs - The cost-efficiency of a certain spot 
+VM is calculated as the ``cost
+\textit{per unit of resources an application utilises} per unit time'',
+which can be thought of as price/utilisation/hour.
+
+\item Cost-Benefit of migration - This is the transaction (overhead) cost
+of migrating from one VM to another, which takes into account the
+performance overhead and cost overhead. There is a cost overhead as one must
+pay for both VMs initially when migrating.
+\end{itemize}
+% How does it solve the problem
+% Architectural overview and components of the solution
+% Interaction between components
+
+%\subsubsection{Problems and evaluation}
+% Problems with the paper itself - weaknesses, assumptions and drawbacks
+% Problems with the solution, what scenarios does it not apply to?
+
+
+\section{Edge computing}
+\subsection{Fog computing}
+The Foglets system is a programming infrastructure for the geo-distributed
+computational continuum represented by fog nodes and the cloud. Foglets provides
+an API for a spatio-temporal data abstraction for storing and retrieving
+application generated data on local codes and primitives for communication.
+
+\subsubsection{Key points}
+\textbf{Assumptions}
+\begin{itemize}
+\item The existence of a computational continuum that includes sensors
+and sensor platforms and a complete IaaS interface
+\item Each device is associated with a certain geophysical location
+\item Physical devices (\textit{fog computing nodes}) are placed in the
+network infrastructure
+\item Fog provides a programming interface that allows managing on-demand
+computing instances
+\end{itemize}
+% What are the motivations behind the paper? Why was it written?
+IoT and cloud computing typically generates event data at the edges, but
+does the bulk of the processing on the cloud. The issue with this is
+an explosion in the number of devices and sensors, where the underlying
+network constraints poses challenges.
+
+The Foglets model focuses on \textbf{situation awareness applications} which
+are especially vulnerable to the network constraint problems with
+concerns regarding
+\begin{itemize}
+\item Latency
+\item Scalability
+\item Security
+\end{itemize}
+
+The idea of \textbf{fog computing} is to bring computing closer to the edge
+as an extension of the cloud. This reduces the round trip latency from
+sensing source to actuator point.
+
+\imagefig{0.7\textwidth}{imgs/fog-cloud.png}{Fog and cloud infrastructure. F[i]
+denotes an application component launched on a specific computational resource.}
+Foglet goals:
+\begin{itemize}
+\item Provide a high-level programming model that simplifies development on a
+large number of heterogeneous devices distributed over a wide area
+\item Provide an execution environment that enables incremental and flexible
+provisioning of resources from sensors to the cloud
+\end{itemize}
+% Any related work that came before and after the paper?
+% What problem does it solve?
+
+\subsubsection{Specifics/details}
+\textbf{Runtime system}
+\begin{itemize}
+\item Discovery server - maintains a list of available nodes for a given
+network hierarchy level and geographical location
+\item Docker registry - key/value store which contains binaries of applications
+launched on Foglets
+\item Entry point daemon - runs on each non-leaf node listening for requests
+from one layer below and communicates with the discovery server and
+participates in discovery and migration protocols
+\item Worker process - executes an application component functionality
+\end{itemize}
+
+Launching applications follows a ``two-step" process
+\begin{enumerate}
+\item Write the logic for each component and their handlers
+\item Create binaries from this logic and register them with the docker registry
+\item Use the API to launch the application
+\end{enumerate}
+
+\textbf{Discovery} is done by finding suitable nodes for a given application
+component. The entry point daemon aids by providing status information of
+each node as one of \textsc{BUSY(B), READY(R), READY-DEPLOYED(RD}. Nodes
+which already have the component deployed on them are prioritised.
+
+\textbf{Deployment} works by starting a docker container on a chosen node
+which will run a worker process.
+
+\textbf{Migration}
+Migration is important for improving quality of service and managing workloads.
+There are two aspects to migration
+\begin{itemize}
+\item Computation migration - where handlers are required at old parent and new
+parent nodes to allow for transfer of process
+\item State migration - where persisted data must be available to allow for
+transfer to a new node
+\end{itemize}
+A \textbf{QoS-driven} migration focuses on an upper bound on parent-child latency.
+It can either be \textit{proactive} and find a new node to migrate when the
+latency passes the threshold or \textit{reactive} where the child actively seeks
+a new parent, and the new parent contacts the old parent.
+
+A \textbf{Workload-driven} migration has the entry point daemon monitoring the
+nodes. Occasionally, when some process becomes more resource intensive, Foglets
+will attempt to migrate other processes to new parent nodes to give the resource
+intensive process more room/resources.
+% How does it solve the problem
+% Architectural overview and components of the solution
+% Interaction between components
+
+%\subsubsection{Problems and evaluation}
+% Problems with the paper itself - weaknesses, assumptions and drawbacks
+% Problems with the solution, what scenarios does it not apply to?
+
+
+\section{Machine learning}
+\subsection{Learning scheduling algorithms}
+\subsubsection{Key points}
+% What are the motivations behind the paper? Why was it written?
+% Any related work that came before and after the paper?
+% What problem does it solve?
+
+%\subsubsection{Specifics/details}
+% How does it solve the problem
+% Architectural overview and components of the solution
+% Interaction between components
+
+%\subsubsection{Problems and evaluation}
+% Problems with the paper itself - weaknesses, assumptions and drawbacks
+% Problems with the solution, what scenarios does it not apply to?
+
+
+
+%\printbibliography
+\end{document}
+
+
+
