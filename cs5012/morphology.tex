@@ -141,16 +141,16 @@ Sometimes, the mapping directly can be difficult to model,
 so multiple tapes need to be used:
 \begin{itemize}
 \item \textbf{Lexical form} - fox + N + PL
-\item \textbf{Intermediate form} - fox\^{}s#
+\item \textbf{Intermediate form} - fox\^{}s\#
 \item \textbf{Surface form} - foxes
 \end{itemize}
-Here the carot \^{} stands for a morpheme boundary and # stands
+Here the carot \^{} stands for a morpheme boundary and \# stands
 for a word boundary.
 
 The mapping form lexical form to intermediate form is relatively
 straightforward using a FST. The mapping from intermediate form
 to surface form can be handled by rewriting some rules, such as
-\textit{insert an `e' between \{x, s, z\}\^ and s#}. This rule
+\textit{insert an `e' between \{x, s, z\}\^ and s\#}. This rule
 can then be compiled to FST. For several orthographic rules,
 we get several FSTs, which can be combined into a single FST.
 Further composition with FST for the lexical/intermediate mapping.

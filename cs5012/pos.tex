@@ -4,5 +4,245 @@
 Sentences can be split into different parts of speech. These are
 typically usually associated with word classes, morphological classes
 or lexical tags. We can also make finer distinctions using a tagset.
+For example, \textbf{He}\textit{/PPS} \textbf{is}\textit{/VEZ} 
+\textbf{expected}\textit{/VBN} \textbf{to}\textit{/TO} \textbf{race}\textit{/VB}
+\textbf{tomorrow}\textit{/NR}.
+
+There are two types of classes, \textbf{closed class} and \textbf{open class}.
+A closed class is small with a fixed membership, for example:
+\begin{itemize}
+\item Prepositions: of, in, by
+\item Auxiliary verbs: may, can, will, had
+\item Pronouns: I, you, she, his, them
+\item Other function words: it, and
+\end{itemize}
+
+In contrast, an open class contains many more words, with new ones created
+all the time. For example:
+\begin{itemize}
+\item Nouns: fax, futon, cyberspace
+\item Verb, to fax, to google
+\item Adjective: pro-life, Orwellian
+\end{itemize}
+
+In order to group words into classes, we must look at which context a word
+may validly occur in. If one word can be exchanged with another, then
+perhaps they should be put in the same class. It is important to note
+that different languages will use different POSs and distinctions
+between classes are not always clear.
+
+\subsection{Classes of words}
+\subsubsection{Nouns}
+Nouns in English are words for animals, places and things. They can be split
+into proper nouns and common nouns.
+
+\textbf{Proper nouns} - Names, capitalised and not normally preceded by articles.
+For example, France, English.
+
+\textbf{Common nouns} - All other nouns. These can include \textbf{count nouns}
+such as \textit{goat(s)}, \textit{relationship(s}) that can occur as 
+singular or plural; or \textbf{mass nouns} such as \textit{snow},
+\textit{communism} that don't get counted.
+
+\subsubsection{Verbs}
+Verbs are mostly used to describe actions and processes. \textbf{Auxiliary verbs}
+are an example of a closed subclass of verbs. For example
+\begin{itemize}
+\item \textbf{be} (as copula verb) as in `He is a mason'
+\item \textbf{be} (indicating passive) as in `We were robbed'
+\item \textbf{be} (indicating progressive) as in `I am driving'
+\item \textbf{have} (indicating perfect) as in `He has gone'
+\item \textbf{do}
+\begin{itemize}
+\item Question - `Does he play the piano?'
+\item Negation - `He does not play the piano'
+\item Emphasis - `He does play the piano!'
+\end{itemize}
+\end{itemize}
+Auxiliary verbs also include modal verbs, which mark mood:
+\begin{itemize}
+\item can (ability or possibility)
+\item may (permission or possibility)
+\item must (necessity)
+\item have (necessity: `I have to go')
+\end{itemize}
+
+\subsubsection{Adjectives}
+Terms that describe properties or qualities
+\begin{itemize}
+\item Color: white, purple
+\item Age: old, young
+\item Value: good, bad
+\item Size: tall, wide
+\end{itemize}
+
+\subsubsection{Adverbs}
+Modify verb, adjective or other adverb, for example `drive \underline{slowly}'.
+Adverbs can also have certain properties such as
+\begin{itemize}
+\item Directional and locative: `drive \underline{downhill}'
+\item Temporal: `he is leaving \underline{tomorrow}'
+\item Degree: `\underline{extremely} good, \underline{somewhat} bad'
+\end{itemize}
+
+\subsubsection{Preposition}
+Prepositions indicate spatial, temporal or other relation to a noun phrase.
+\begin{itemize}
+\item \underline{to} school
+\item \underline{on} time
+\item found \underline{by} the lake
+\end{itemize}
+
+\subsubsection{Particles}
+Particles resemble prepositions or adverbs, but are tied closely to a verb
+\begin{itemize}
+\item brush himself \underline{off}
+\item turn the paper \underline{over}
+\end{itemize}
+A verb and particle together are called phrasal verb.
+
+\subsubsection{Determiners}
+\begin{itemize}
+\item definite articles (the) or indefinite articles (a, an)
+\item demonstratives (this chapter, those books)
+\item universal determiners (both cats)
+\end{itemize}
+
+\subsubsection{Conjunctions}
+Conjunctions join two phrases, clauses or sentences. There are two types of
+conjunctions. 
+
+\textbf{Coordinating conjunctions} join two elements of equal status, for
+example and, or, but. \textbf{Subordinating conjunctions} embed one
+element into another, for example `I think \underline{that} he might like
+some tea'
+
+\subsubsection{Pronouns}
+Pronouns are a brief way to refer to some entity or event without naming
+it explicitly. This includes \textbf{personal} pronouns, \textbf{possessive}
+pronouns and \textbf{interrogative} pronouns.
+
+\subsubsection{Other classes}
+\begin{itemize}
+\item \textbf{Interjections} - oh, alas, man, ...
+\item \textbf{Negatives} - no, not
+\item \textbf{Politeness markers} - please, thank you
+\item \textbf{Greetings} - hello, goodbye
+\end{itemize}
+
+\subsection{Tagging}
+There are a few different approaches to automatic tagging. A basic approach
+is to assign a most likely tag to each word, which typically helps to correctly
+disambiguate 40\% of ambiguous tokens. This is known as the \textbf{baseline}.
+
+\subsubsection{Rule-based tagging}
+In a rule-based tagging approach a dictionary is used to find all possible
+tags for each word token. The one can repeatedly apply hand-crated rules
+to narrow this down to a single tag per word.
+
+These rules are typically `negative constraints'. In other words, if certain
+conditions on preceding the following words are fulfilled, then we eliminate
+certain tags at the current word.
+
+\subsubsection{Transformation-based tagging}
+In transformation-based tagging (also known as \textbf{Brill tagging}), we
+use a transformation rule of the form: If the previous and following words
+(within certain small distance) have certain tags, then change current tag X 
+into tag Y.
+
+We start with training by
+\begin{itemize}
+\item Assign most likely tag to each word token
+\item Consider all possible rules
+\item The one that improves accuracy the most is taken to be rule number 1
+\item Apply that rule everywhere
+\item Repeat to find rule number 2, ...
+\item Until no more substantial improvement possible
+\end{itemize}
+After learning list of rules in decreasing order of priority, tag
+unseen data:
+\begin{itemize}
+\item Assign most likely tag to each word token
+\item Apply rule number 1 everywhere
+\item Repeat for rule number 2, ...
+\end{itemize}
+
+\subsubsection{Hidden Markov models}
+Two simplifying assumptions:
+\begin{enumerate}
+\item Probability of word depends only on its POS
+\begin{equation}
+P(w^n_1\ |\ t^n_1) \approx \prod^n_{i=1}P(w_i\ |\ t_i)
+\end{equation}
+\item (Markov assumption): Probability of a tag only depends on the previous tag
+\begin{equation}
+P(t^n_1) \approx \left(\prod^n_{i=1}P(t_i\ | t_{i-1})\right) \cdot P(\langle /s \rangle\ |\  t_n)
+\end{equation}
+\end{enumerate}
+This assumes that $t_0$ is a start-of-sentence tag $\langle s \rangle$ and the
+end-of-sentence tag is $\langle /s \rangle$. Hence:
+\begin{equation}
+\^{t}^n_1 \approx \underset{t^n_1}{\text{argmax}}\left(\prod^n_{i=1} P(w_i\ |\ t_i) \cdot P(t_i\ |\ t_{i-1}) \right) \cdot P(\langle /s \rangle\ |\ t_n)
+\end{equation}
+This can be seen as nondeterministically walking through an automaton
+while scanning the sentence left-to-right, guessing the next tag at each
+step and accumulating the product of many probabilities, taking the best choice
+of all this.
+
+\subsubsection{Training HMMs}
+We can train hidden Markov models using relative frequency estimation.
+We can get the following probabilities using relative frequency estimation
+\begin{equation}
+P(t_i\ |\ t_{i-1}) = \frac{C(t_{i-1}t_i)}{C(t_{i-1})}
+\end{equation}
+\begin{equation}
+P(w_i\ |\ t_i) = \frac{C(t_i, w_i)}{C(t_i)}
+\end{equation}
+
+For example:
+\begin{equation}
+P(NN\ |\ DT) = \frac{C(DT\ NN)}{C(DT)} = \frac{56509}{116454} \approx 0.49
+\end{equation}
+\begin{equation}
+P(is\ |\ VBZ) = \frac{C(VBZ, is)}{C(VBZ)} = \frac{10073}{21627} \approx 0.47
+\end{equation}
+
+\subsubsection{HMMs as automata}
+HMMs can be encoded as automata, similar to finite-state transducers, but with
+added probability distributions. The states in the automata represent `hidden'
+information.
+
+For each state, there is a probability distribution over outgoing transitions 
+to other states (probabilities sum to 1). We assume that there is a transition
+from every state (except the final state) to every other state (except the
+initial state). For each state (except initial and final) there is a 
+probability distribution over the symbols to be the output. The output is
+therefore the observable information.
+
+Formally,
+\begin{itemize}
+\item finite set $Q$ of states
+\item finite set $\sum$ of output symbols
+\item initial state $q_0 \in Q$ and final state $q_F \in Q$
+\item transition probabilities $\alpha(q, q')$ for each pair of $(q,q')$ where
+$q \in Q \textbackslash \{q_F\}$ and $q' \in Q \textbackslash \{q_0\}$
+\item emission probabilities $\beta(q, a)$ for each pair of $(q, a)$ where
+$q \in Q \textbackslash \{q_0, q_F\}$ and $a \in \sum$
+\end{itemize}
+
+With a FSM as an HMM, we can determine the most likely sequence of states
+given a sequence of output (observed) symbols by decoding it. The classic
+algorithm for decoding is the \textbf{Viterbi algorithm}.
+
+\subsubsection{Viterbi algorithm}
+
+\subsubsection{Forward algorithm}
+
+\subsubsection{Baum-Welch algorithm}
+
+\subsection{Noisy channels}
+
 
 \end{document}
+
+

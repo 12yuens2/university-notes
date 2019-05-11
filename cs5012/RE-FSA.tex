@@ -208,6 +208,68 @@ intersection, but they are closed under \textbf{inversion} (swap input
 and output parts of all transitions).
 
 \subsubsection{Sequential transducer}
+A sequential transducer is a special case FST such that:
+\begin{itemize}
+\item every transition has the form $(q,a,v,q')$ for a symbol $a$
+\item given $q$ and $a$, there is at most one pair $(v, q')$ such that
+$(q, a, v, q')$ is a transition
+\end{itemize}
+In other words, there is only one or less transitions for each $(q, a)$ pair.
+It behaves like a DFA on the input side. If the output was ignored,
+it would be exactly a DFA.
+
+\subsection{Minimum edit distance}
+The minimum edit distance describes the minimum number of insertions,
+deletions and substitutions needed to turn one string into another.
+This has useful applications in error correction.
+
+For example, the minimum edit distance between the words \textsc{INTENTION}
+and \textsc{EXECUTION} is 5:
+\begin{table}[H]
+\centering
+\begin{tabular}{c c c c c c c c c c}
+I & N & T & E & * & N & T & I & O & N \\
+\_ & \_ & \_ & \_ & \_ & \_ & \_ & \_ & \_ & \_ \\
+* & E & X & E & C & U & T & I & O & N \\
+d & s & s &   & i & s &   &   &   &   \\
+\end{tabular}
+\end{table}
+
+To compute this an be sure there is no better solution:
+\begin{itemize}
+\item let strings $v = a_1 ... a_m$ and $w = b_1 ... b_n$
+\item let $0 \leq i \leq m$ and $0 \leq j \leq n$
+\item let $dist(i, j)$ be the minimum edit distance of $a_1 ... a_i$ 
+and $b_1 ... b_j$
+\end{itemize}
+So the minimum edit distance of $v$ and $w$ is $dist(n, m)$ and we can
+clearly see that $dist(0, 0) = 0$.
+
+Now for $(i,j) \neq (0,0), dist(i, j)$ is the minimum of the following:
+\begin{itemize}
+\item $dist(i - 1, j - 1) + s(a_i, b_j)$ only if $i \geq 1$ and $j \geq 1$
+\item $dist(i, j - 1) + i(b_j)$ only if $j \geq 1$
+\item $dist(i - 1, j), + d(a_i)$ only if $i \geq 1$
+\end{itemize}
+We can assume the cost of insertion and delete is 1 for all symbols
+and the cost of substitution is 0 if $a = b$ and 1 otherwise.
+
+
+\subsection{Tokenisation}
+Tokenisation is the idea of dividing text into words, punctuation, numbers, etc.
+It is often the first phase in analysis of written text. There are many
+difficulties in doing this, such as a period `.' as it can have multiple
+meanings (end of sentence, abbreviation, decimal point, etc.). We can
+see finite-state technology to solve most problems of tokenisation.
+
+This is more complex in languages that do not separate words by whitespace,
+such as Chinese and Japanese. A typical approach to tokenisation for
+these languages is to use an `eager' dictionary method by matching the
+longest sequences of characters left-to-right that can be found in the
+dictionary. When a match is found, remove the characters from the text and
+continue match. This is called \textbf{MaxMatch} (maximum match). The main
+weakness of this approach is if there are unknown words (not in the dictionary)
+in the text.
 
 
 \end{document}
